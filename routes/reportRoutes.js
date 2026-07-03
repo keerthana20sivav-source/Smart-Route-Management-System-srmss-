@@ -11,15 +11,19 @@ router.get('/reports', (req, res) => {
 
   // Period date filter
   let periodFilter = '';
+  let driverPeriodFilter = '';
   let periodLabel = '';
   if (period === 'week') {
     periodFilter = `AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)`;
+    driverPeriodFilter = `AND t.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)`;
     periodLabel = 'This Week';
   } else if (period === 'month') {
     periodFilter = `AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())`;
+    driverPeriodFilter = `AND MONTH(t.created_at) = MONTH(CURDATE()) AND YEAR(t.created_at) = YEAR(CURDATE())`;
     periodLabel = 'This Month';
   } else {
     periodFilter = '';
+    driverPeriodFilter = '';
     periodLabel = 'All Time';
   }
 
@@ -93,7 +97,7 @@ router.get('/reports', (req, res) => {
                                 FROM trips t
                                 LEFT JOIN schedules s ON t.schedule_id = s.schedule_id
                                 LEFT JOIN drivers d ON s.driver_id = d.driver_id
-                                WHERE d.full_name IS NOT NULL ${periodFilter}
+                                WHERE d.full_name IS NOT NULL ${driverPeriodFilter}
                                 GROUP BY s.driver_id ORDER BY on_time DESC`,
                         (err, driverPerformance) => {
 
