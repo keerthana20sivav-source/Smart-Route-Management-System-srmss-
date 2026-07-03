@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Fuel Logs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* ===== GLOBAL ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f5f0eb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* ===== SRI LANKAN STRIPES ===== */
+    .sri-lanka-stripes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      display: flex;
+      z-index: 1050;
+    }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; }
+    .stripe-gold { background: #FFD700; }
+    .stripe-green { background: #006633; }
+    .stripe-orange { background: #FF6600; }
+    .stripe-maroon2 { background: #8B1A1A; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%);
+      position: fixed;
+      top: 6px;
+      left: 0;
+      padding: 20px 0;
+      color: white;
+      z-index: 1040;
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(139, 26, 26, 0.2);
+      transition: all 0.3s ease;
+    }
+    .sidebar-brand {
+      font-size: 22px;
+      font-weight: 800;
+      padding: 0 20px 18px 20px;
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #FFD700;
+    }
+    .sidebar-brand span { color: white; }
+    .sidebar-brand i { font-size: 28px; }
+    .sidebar-section {
+      padding: 12px 20px 6px 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a i { width: 20px; text-align: center; font-size: 16px; }
+    .sidebar a:hover {
+      background: rgba(255, 215, 0, 0.12);
+      color: white;
+      border-left-color: #FFD700;
+    }
+    .sidebar a.active {
+      background: rgba(255, 215, 0, 0.15);
+      color: #FFD700;
+      border-left-color: #FFD700;
+    }
+    .sidebar a.logout-link {
+      margin-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 16px;
+      color: rgba(255, 150, 150, 0.8);
+    }
+    .sidebar a.logout-link:hover { color: #ff6b6b; border-left-color: #ff6b6b; }
+    .sidebar .sri-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      margin: 12px 16px 0 16px;
+      background: rgba(255, 215, 0, 0.15);
+      border-radius: 20px;
+      font-size: 11px;
+      color: #FFD700;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main {
+      margin-left: 260px;
+      padding: 30px 30px 30px 30px;
+      margin-top: 6px;
+    }
+
+    /* ===== TOPBAR ===== */
+    .topbar {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.08);
+      border-left: 4px solid #8B1A1A;
+    }
+    .topbar h5 {
+      font-weight: 700;
+      color: #3a2a22;
+    }
+    .topbar h5 i { color: #8B1A1A; margin-right: 8px; }
+    .topbar .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B1A1A, #A02020);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ===== STATS BADGE ===== */
+    .stats-badge {
+      background: #fdf2ee;
+      color: #8B1A1A;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-add {
+      background: linear-gradient(135deg, #8B1A1A 0%, #A02020 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(139, 26, 26, 0.2);
+    }
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(139, 26, 26, 0.3);
+      background: linear-gradient(135deg, #7a1515 0%, #8B1A1A 100%);
+      color: white;
+    }
+    .btn-add i { margin-right: 6px; }
+
+    .btn-sm-outline {
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 13px;
+      border: 2px solid #eddfd7;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .btn-sm-outline.delete {
+      color: #dc3545;
+    }
+    .btn-sm-outline.delete:hover {
+      background: #fdf2ee;
+      border-color: #dc3545;
+    }
+
+    /* ===== CARD / TABLE ===== */
+    .card-custom {
+      background: white;
+      border-radius: 16px;
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06);
+      border: none;
+      border-top: 4px solid #8B1A1A;
+      overflow: hidden;
+    }
+    .card-custom .card-header-custom {
+      padding: 18px 24px;
+      background: #faf7f5;
+      border-bottom: 2px solid #f5f0eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-custom .card-header-custom h6 {
+      font-weight: 700;
+      color: #3a2a22;
+      margin: 0;
+    }
+    .card-custom .card-header-custom h6 i {
+      color: #8B1A1A;
+      margin-right: 8px;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+    .table thead th {
+      background: #faf7f5;
+      color: #5a4a3a;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #f5f0eb;
+      padding: 12px 16px;
+      white-space: nowrap;
+    }
+    .table tbody td {
+      padding: 12px 16px;
+      vertical-align: middle;
+      font-size: 13px;
+      border-bottom: 1px solid #f5f0eb;
+      color: #3a2a22;
+    }
+    .table tbody tr:hover {
+      background: #fdfaf8;
+    }
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #b5a69a;
+    }
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+      color: #eddfd7;
+    }
+    .empty-state h6 {
+      color: #3a2a22;
+      font-weight: 600;
+    }
+
+    .fuel-icon { color: #8B1A1A; }
+
+    /* ===== SUMMARY CARDS ===== */
+    .summary-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06);
+      border-top: 3px solid #8B1A1A;
+      text-align: center;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    .summary-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(139, 26, 26, 0.12);
+    }
+    .summary-card .summary-icon {
+      font-size: 28px;
+      color: #8B1A1A;
+      margin-bottom: 4px;
+    }
+    .summary-card .summary-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #3a2a22;
+    }
+    .summary-card .summary-label {
+      font-size: 12px;
+      color: #8a7a6e;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .summary-card .summary-sub {
+      font-size: 11px;
+      color: #b5a69a;
+      margin-top: 2px;
+    }
+    .summary-card.primary { border-top-color: #8B1A1A; }
+    .summary-card.gold { border-top-color: #FFD700; }
+    .summary-card.green { border-top-color: #006633; }
+    .summary-card.orange { border-top-color: #FF6600; }
+
+    /* ===== HIGH USAGE ROUTE BADGE ===== */
+    .rank-badge {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .rank-1 { background: #FFD700; color: #3a2a22; }
+    .rank-2 { background: #C0C0C0; color: #3a2a22; }
+    .rank-3 { background: #CD7F32; color: white; }
+    .rank-other { background: #f5f0eb; color: #8a7a6e; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 72px;
+        padding: 12px 0;
+      }
+      .sidebar-brand {
+        font-size: 16px;
+        padding: 0 12px 12px 12px;
+        justify-content: center;
+      }
+      .sidebar-brand span,
+      .sidebar-brand .brand-text,
+      .sidebar-section,
+      .sidebar a span,
+      .sidebar .sri-badge {
+        display: none;
+      }
+      .sidebar a {
+        justify-content: center;
+        padding: 14px 0;
+      }
+      .sidebar a i {
+        font-size: 20px;
+        margin: 0;
+      }
+      .main {
+        margin-left: 72px;
+        padding: 20px 16px;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .card-custom .card-header-custom {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .table-responsive-wrapper {
+        overflow-x: auto;
+      }
+      .summary-card .summary-value { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SRI LANKAN STRIPES ===== -->
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div>
+    <div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div>
+    <div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon2"></div>
+  </div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-bus"></i>
+      <span>SRM<span class="brand-text">SS</span></span>
+    </div>
+
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel" class="active"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+
+    <a href="/logout" class="logout-link">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </a>
+
+    <div class="sri-badge">
+      <i class="fas fa-flag"></i> Sri Lanka
+      <i class="fas fa-map-pin" style="font-size:10px;"></i>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-gas-pump"></i> Fuel Logs
+        <span class="stats-badge ms-2">
+          <i class="fas fa-list me-1"></i> <%= fuels.length %> Records
+        </span>
+      </h5>
+      <div class="d-flex align-items-center gap-3">
+        <div class="user-info">
+          <div class="user-avatar">
+            <%= user ? user.full_name.charAt(0).toUpperCase() : 'A' %>
+          </div>
+          <span style="font-weight:600; color:#3a2a22;">
+            <%= user ? user.full_name : 'Admin' %>
+          </span>
+        </div>
+        <a href="/fuel/add" class="btn-add btn">
+          <i class="fas fa-plus-circle"></i> Add Fuel Log
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== SUMMARY CARDS ===== -->
+    <!-- ===== SUMMARY CARDS ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="summary-card primary">
+      <div class="summary-icon"><i class="fas fa-oil-can"></i></div>
+      <div class="summary-value">
+        <%= summary && summary.total_liters ? parseFloat(summary.total_liters).toFixed(2) : '0.00' %>
+      </div>
+      <div class="summary-label">Total Fuel Used</div>
+      <div class="summary-sub">Liters</div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-6">
+    <div class="summary-card gold">
+      <div class="summary-icon"><i class="fas fa-money-bill-wave"></i></div>
+      <div class="summary-value">
+        LKR <%= summary && summary.total_cost ? parseFloat(summary.total_cost).toFixed(2) : '0.00' %>
+      </div>
+      <div class="summary-label">Total Cost</div>
+      <div class="summary-sub">Sri Lankan Rupees</div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-6">
+    <div class="summary-card green">
+      <div class="summary-icon"><i class="fas fa-receipt"></i></div>
+      <div class="summary-value">
+        <%= summary && summary.total_entries ? summary.total_entries : '0' %>
+      </div>
+      <div class="summary-label">Total Entries</div>
+      <div class="summary-sub">Records</div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-6">
+    <div class="summary-card orange">
+      <div class="summary-icon"><i class="fas fa-chart-line"></i></div>
+      <div class="summary-value">
+        LKR <%= summary && summary.avg_cost ? parseFloat(summary.avg_cost).toFixed(2) : '0.00' %>
+      </div>
+      <div class="summary-label">Average Cost</div>
+      <div class="summary-sub">Per Record</div>
+    </div>
+  </div>
+</div>
+
+    <!-- ===== HIGH USAGE ROUTES ===== -->
+    <div class="card-custom mb-4">
+      <div class="card-header-custom">
+        <h6>
+          <i class="fas fa-fire" style="color:#FF6600;"></i> High Usage Routes
+          <span style="font-size:11px; color:#8a7a6e; font-weight:400; margin-left:8px;">
+            (Top 5 routes by fuel consumption)
+          </span>
+        </h6>
+        <span style="font-size:11px; color:#8a7a6e;">
+          <i class="fas fa-gas-pump"></i> Most fuel used
+        </span>
+      </div>
+
+      <div class="table-responsive-wrapper" style="padding: 0 4px 4px 4px;">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Route</th>
+              <th>Trips</th>
+              <th>Total Liters</th>
+              <th>Total Cost</th>
+              <th>Avg L/Trip</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(highUsageRoutes && highUsageRoutes.length > 0) { %>
+              <% highUsageRoutes.forEach((r, index) => { %>
+              <tr>
+                <td>
+                  <span class="rank-badge <%= index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other' %>">
+                    <%= index + 1 %>
+                  </span>
+                </td>
+                <td>
+                  <span style="font-weight:600;">
+                    <i class="fas fa-route" style="color:#8B1A1A;"></i>
+                    <%= r.route_name || 'N/A' %>
+                  </span>
+                  <br>
+                  <small style="color:#8a7a6e;"><%= r.start_point || '' %> → <%= r.end_point || '' %></small>
+                </td>
+                <td>
+                  <span class="badge" style="background:#faf7f5; color:#3a2a22; padding:4px 12px; border-radius:12px;">
+                    <%= r.trip_count || 0 %> trips
+                  </span>
+                </td>
+                <td>
+                  <span style="font-weight:700; color:#FF6600; font-size:16px;">
+                    <%= parseFloat(r.total_liters).toFixed(2) %> L
+                  </span>
+                </td>
+                <td>
+                  <span style="font-weight:600;">
+                    LKR <%= parseFloat(r.total_cost).toFixed(2) %>
+                  </span>
+                </td>
+                <td>
+                  <span style="background:#faf7f5; padding:2px 12px; border-radius:12px; font-size:12px;">
+                    <%= (r.total_liters && r.trip_count && r.trip_count > 0) ? (parseFloat(r.total_liters) / parseFloat(r.trip_count)).toFixed(2) : '0.00' %> L
+                  </span>
+                </td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="fas fa-inbox me-2"></i> No fuel data available for routes
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== FUEL LOGS TABLE ===== -->
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h6>
+          <i class="fas fa-table"></i> All Fuel Logs
+        </h6>
+        <div style="font-size:12px; color:#8a7a6e;">
+          <i class="fas fa-circle" style="color:#006633; font-size:8px;"></i> Records
+          <span class="mx-2">|</span>
+          <i class="fas fa-gas-pump" style="color:#8B1A1A;"></i> Fuel Tracking
+        </div>
+      </div>
+
+      <div class="table-responsive-wrapper" style="padding: 0 4px 4px 4px;">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Bus</th>
+              <th>Route</th>
+              <th>Liters</th>
+              <th>Cost (LKR)</th>
+              <th>Date</th>
+              <th>Recorded By</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(fuels.length === 0) { %>
+              <tr>
+                <td colspan="8">
+                  <div class="empty-state">
+                    <i class="fas fa-gas-pump"></i>
+                    <h6>No Fuel Logs Found</h6>
+                    <p style="color:#b5a69a; font-size:14px;">Click "Add Fuel Log" to record your first fuel entry.</p>
+                  </div>
+                </td>
+              </tr>
+            <% } else { %>
+              <% fuels.forEach((f, index) => { %>
+              <tr>
+                <td><strong><%= index + 1 %></strong></td>
+                <td>
+                  <span style="font-weight:600; color:#3a2a22;">
+                    <i class="fas fa-bus-alt fuel-icon"></i>
+                    <%= f.registration_no || 'N/A' %>
+                  </span>
+                </td>
+                <td>
+                  <% if(f.route_name) { %>
+                    <span style="background:#faf7f5; padding:2px 10px; border-radius:12px; font-size:12px;">
+                      <i class="fas fa-route" style="color:#8B1A1A;"></i> <%= f.route_name %>
+                    </span>
+                  <% } else { %>
+                    <span style="color:#b5a69a; font-size:13px;">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span style="font-weight:700; color:#8B1A1A;">
+                    <%= f.liters %> <span style="font-weight:400; color:#8a7a6e;">L</span>
+                  </span>
+                </td>
+                <td>
+                  <span style="font-weight:600;">
+                    LKR <%= f.cost %>
+                  </span>
+                </td>
+                <td>
+                  <i class="fas fa-calendar" style="color:#8B1A1A; font-size:11px;"></i>
+                  <%= f.log_date ? new Date(f.log_date).toLocaleDateString('en-LK', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %>
+                </td>
+                <td>
+                  <% if(f.recorded_by_name) { %>
+                    <span style="background:#faf7f5; padding:2px 10px; border-radius:12px; font-size:12px;">
+                      <i class="fas fa-user" style="color:#8B1A1A;"></i> <%= f.recorded_by_name %>
+                    </span>
+                  <% } else { %>
+                    <span style="color:#b5a69a; font-size:13px;">—</span>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <a href="/fuel/delete/<%= f.fuel_id %>" 
+                     class="btn-sm-outline delete" 
+                     onclick="return confirm('Are you sure you want to delete this fuel log?')"
+                     title="Delete Record">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 •
+      <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

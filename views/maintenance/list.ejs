@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Maintenance</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* ===== GLOBAL ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f5f0eb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* ===== SRI LANKAN STRIPES ===== */
+    .sri-lanka-stripes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      display: flex;
+      z-index: 1050;
+    }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; }
+    .stripe-gold { background: #FFD700; }
+    .stripe-green { background: #006633; }
+    .stripe-orange { background: #FF6600; }
+    .stripe-maroon2 { background: #8B1A1A; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%);
+      position: fixed;
+      top: 6px;
+      left: 0;
+      padding: 20px 0;
+      color: white;
+      z-index: 1040;
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(139, 26, 26, 0.2);
+      transition: all 0.3s ease;
+    }
+    .sidebar-brand {
+      font-size: 22px;
+      font-weight: 800;
+      padding: 0 20px 18px 20px;
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #FFD700;
+    }
+    .sidebar-brand span { color: white; }
+    .sidebar-brand i { font-size: 28px; }
+    .sidebar-section {
+      padding: 12px 20px 6px 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a i { width: 20px; text-align: center; font-size: 16px; }
+    .sidebar a:hover {
+      background: rgba(255, 215, 0, 0.12);
+      color: white;
+      border-left-color: #FFD700;
+    }
+    .sidebar a.active {
+      background: rgba(255, 215, 0, 0.15);
+      color: #FFD700;
+      border-left-color: #FFD700;
+    }
+    .sidebar a.logout-link {
+      margin-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 16px;
+      color: rgba(255, 150, 150, 0.8);
+    }
+    .sidebar a.logout-link:hover { color: #ff6b6b; border-left-color: #ff6b6b; }
+    .sidebar .sri-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      margin: 12px 16px 0 16px;
+      background: rgba(255, 215, 0, 0.15);
+      border-radius: 20px;
+      font-size: 11px;
+      color: #FFD700;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main {
+      margin-left: 260px;
+      padding: 30px 30px 30px 30px;
+      margin-top: 6px;
+    }
+
+    /* ===== TOPBAR ===== */
+    .topbar {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.08);
+      border-left: 4px solid #8B1A1A;
+    }
+    .topbar h5 {
+      font-weight: 700;
+      color: #3a2a22;
+    }
+    .topbar h5 i { color: #8B1A1A; margin-right: 8px; }
+    .topbar .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B1A1A, #A02020);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ===== STATS BADGE ===== */
+    .stats-badge {
+      background: #fdf2ee;
+      color: #8B1A1A;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-add {
+      background: linear-gradient(135deg, #8B1A1A 0%, #A02020 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(139, 26, 26, 0.2);
+    }
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(139, 26, 26, 0.3);
+      background: linear-gradient(135deg, #7a1515 0%, #8B1A1A 100%);
+      color: white;
+    }
+    .btn-add i { margin-right: 6px; }
+
+    .btn-sm-outline {
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 13px;
+      border: 2px solid #eddfd7;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .btn-sm-outline.edit {
+      color: #8B1A1A;
+    }
+    .btn-sm-outline.edit:hover {
+      background: #fdf2ee;
+      border-color: #8B1A1A;
+    }
+    .btn-sm-outline.delete {
+      color: #dc3545;
+    }
+    .btn-sm-outline.delete:hover {
+      background: #fdf2ee;
+      border-color: #dc3545;
+    }
+
+    /* ===== CARD / TABLE ===== */
+    .card-custom {
+      background: white;
+      border-radius: 16px;
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06);
+      border: none;
+      border-top: 4px solid #8B1A1A;
+      overflow: hidden;
+    }
+    .card-custom .card-header-custom {
+      padding: 18px 24px;
+      background: #faf7f5;
+      border-bottom: 2px solid #f5f0eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-custom .card-header-custom h6 {
+      font-weight: 700;
+      color: #3a2a22;
+      margin: 0;
+    }
+    .card-custom .card-header-custom h6 i {
+      color: #8B1A1A;
+      margin-right: 8px;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+    .table thead th {
+      background: #faf7f5;
+      color: #5a4a3a;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #f5f0eb;
+      padding: 12px 16px;
+      white-space: nowrap;
+    }
+    .table tbody td {
+      padding: 12px 16px;
+      vertical-align: middle;
+      font-size: 13px;
+      border-bottom: 1px solid #f5f0eb;
+      color: #3a2a22;
+    }
+    .table tbody tr:hover {
+      background: #fdfaf8;
+    }
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #b5a69a;
+    }
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+      color: #eddfd7;
+    }
+    .empty-state h6 {
+      color: #3a2a22;
+      font-weight: 600;
+    }
+
+    .maintenance-icon { color: #8B1A1A; }
+
+    /* ===== BADGES ===== */
+    .badge-routine {
+      background: #e8f5ee;
+      color: #006633;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .badge-corrective {
+      background: #fdf0e6;
+      color: #FF6600;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .badge-preventive {
+      background: #e8f0fe;
+      color: #1a56db;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .badge-emergency {
+      background: #fdf2ee;
+      color: #8B1A1A;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    .badge-status {
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-status.pending { background: #fdf0e6; color: #FF6600; }
+    .badge-status.in_progress { background: #e8f0fe; color: #1a56db; }
+    .badge-status.completed { background: #e8f5ee; color: #006633; }
+
+    .next-service-due {
+      background: #fdf2ee;
+      color: #8B1A1A;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .next-service-ok {
+      background: #e8f5ee;
+      color: #006633;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .next-service-soon {
+      background: #fdf0e6;
+      color: #FF6600;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ===== SUMMARY CARDS ===== */
+    .summary-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06);
+      border-top: 3px solid #8B1A1A;
+      text-align: center;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    .summary-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(139, 26, 26, 0.12);
+    }
+    .summary-card .summary-icon {
+      font-size: 28px;
+      color: #8B1A1A;
+      margin-bottom: 4px;
+    }
+    .summary-card .summary-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #3a2a22;
+    }
+    .summary-card .summary-label {
+      font-size: 12px;
+      color: #8a7a6e;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .summary-card .summary-sub {
+      font-size: 11px;
+      color: #b5a69a;
+      margin-top: 2px;
+    }
+    .summary-card.primary { border-top-color: #8B1A1A; }
+    .summary-card.gold { border-top-color: #FFD700; }
+    .summary-card.green { border-top-color: #006633; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 72px;
+        padding: 12px 0;
+      }
+      .sidebar-brand {
+        font-size: 16px;
+        padding: 0 12px 12px 12px;
+        justify-content: center;
+      }
+      .sidebar-brand span,
+      .sidebar-brand .brand-text,
+      .sidebar-section,
+      .sidebar a span,
+      .sidebar .sri-badge {
+        display: none;
+      }
+      .sidebar a {
+        justify-content: center;
+        padding: 14px 0;
+      }
+      .sidebar a i {
+        font-size: 20px;
+        margin: 0;
+      }
+      .main {
+        margin-left: 72px;
+        padding: 20px 16px;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .card-custom .card-header-custom {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .table-responsive-wrapper {
+        overflow-x: auto;
+      }
+      .summary-card .summary-value { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SRI LANKAN STRIPES ===== -->
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div>
+    <div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div>
+    <div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon2"></div>
+  </div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-bus"></i>
+      <span>SRM<span class="brand-text">SS</span></span>
+    </div>
+
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance" class="active"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+
+    <a href="/logout" class="logout-link">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </a>
+
+    <div class="sri-badge">
+      <i class="fas fa-flag"></i> Sri Lanka
+      <i class="fas fa-map-pin" style="font-size:10px;"></i>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-wrench"></i> Maintenance Logs
+        <span class="stats-badge ms-2">
+          <i class="fas fa-list me-1"></i> <%= logs.length %> Records
+        </span>
+      </h5>
+      <div class="d-flex align-items-center gap-3">
+        <div class="user-info">
+          <div class="user-avatar">
+            <%= user ? user.full_name.charAt(0).toUpperCase() : 'A' %>
+          </div>
+          <span style="font-weight:600; color:#3a2a22;">
+            <%= user ? user.full_name : 'Admin' %>
+          </span>
+        </div>
+        <a href="/maintenance/add" class="btn-add btn">
+          <i class="fas fa-plus-circle"></i> Add Maintenance
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== SUMMARY CARDS ===== -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4 col-6">
+        <div class="summary-card primary">
+          <div class="summary-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+          <div class="summary-value"><%= logs.length %></div>
+          <div class="summary-label">Total Records</div>
+          <div class="summary-sub">Maintenance Logs</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-6">
+        <div class="summary-card gold">
+          <div class="summary-icon"><i class="fas fa-coins"></i></div>
+          <div class="summary-value">LKR <%= logs.reduce((a, l) => a + parseFloat(l.cost || 0), 0).toFixed(2) %></div>
+          <div class="summary-label">Total Cost</div>
+          <div class="summary-sub">All Maintenance</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-6">
+        <div class="summary-card green">
+          <div class="summary-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="summary-value">
+            <% 
+              const today = new Date();
+              const upcoming = logs.filter(l => l.next_service_date && new Date(l.next_service_date) > today);
+            %>
+            <%= upcoming.length %>
+          </div>
+          <div class="summary-label">Upcoming Services</div>
+          <div class="summary-sub">Due for maintenance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MAINTENANCE TABLE ===== -->
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h6>
+          <i class="fas fa-table"></i> All Maintenance Records
+        </h6>
+        <div style="font-size:12px; color:#8a7a6e;">
+          <i class="fas fa-circle" style="color:#006633; font-size:8px;"></i> Routine
+          <span class="mx-2">|</span>
+          <i class="fas fa-circle" style="color:#FF6600; font-size:8px;"></i> Corrective
+          <span class="mx-2">|</span>
+          <i class="fas fa-circle" style="color:#1a56db; font-size:8px;"></i> Preventive
+          <span class="mx-2">|</span>
+          <i class="fas fa-circle" style="color:#8B1A1A; font-size:8px; animation: pulse 1.5s infinite;"></i> Emergency
+        </div>
+      </div>
+
+      <div class="table-responsive-wrapper" style="padding: 0 4px 4px 4px;">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Bus</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Cost (LKR)</th>
+              <th>Service Date</th>
+              <th>Next Service</th>
+              <th>Status</th>
+              <th>Recorded By</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(logs.length === 0) { %>
+              <tr>
+                <td colspan="10">
+                  <div class="empty-state">
+                    <i class="fas fa-screwdriver-wrench"></i>
+                    <h6>No Maintenance Records Found</h6>
+                    <p style="color:#b5a69a; font-size:14px;">Click "Add Maintenance" to record your first maintenance log.</p>
+                  </div>
+                </td>
+              </tr>
+            <% } else { %>
+              <% logs.forEach((l, index) => { %>
+                <% 
+                  const today = new Date();
+                  const nextDate = l.next_service_date ? new Date(l.next_service_date) : null;
+                  const isDue = nextDate && nextDate <= today;
+                  const isUpcoming = nextDate && nextDate > today && (nextDate - today) < 7 * 24 * 60 * 60 * 1000;
+                %>
+              <tr>
+                <td><strong><%= index + 1 %></strong></td>
+                <td>
+                  <span style="font-weight:600; color:#3a2a22;">
+                    <i class="fas fa-bus-alt maintenance-icon"></i>
+                    <%= l.registration_no || 'N/A' %>
+                  </span>
+                </td>
+                <td>
+                  <% if(l.type === 'routine') { %>
+                    <span class="badge-routine">
+                      <i class="fas fa-rotate"></i> Routine
+                    </span>
+                  <% } else if(l.type === 'corrective') { %>
+                    <span class="badge-corrective">
+                      <i class="fas fa-tools"></i> Corrective
+                    </span>
+                  <% } else if(l.type === 'preventive') { %>
+                    <span class="badge-preventive">
+                      <i class="fas fa-shield-alt"></i> Preventive
+                    </span>
+                  <% } else { %>
+                    <span class="badge-emergency">
+                      <i class="fas fa-triangle-exclamation"></i> Emergency
+                    </span>
+                  <% } %>
+                </td>
+                <td>
+                  <%= l.description ? (l.description.length > 40 ? l.description.substring(0, 40) + '...' : l.description) : '—' %>
+                </td>
+                <td>
+                  <span style="font-weight:600;">
+                    LKR <%= l.cost %>
+                  </span>
+                </td>
+                <td>
+                  <i class="fas fa-calendar" style="color:#8B1A1A; font-size:11px;"></i>
+                  <%= l.service_date ? new Date(l.service_date).toLocaleDateString('en-LK', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %>
+                </td>
+                <td>
+                  <% if(l.next_service_date) { %>
+                    <span class="<%= isDue ? 'next-service-due' : isUpcoming ? 'next-service-soon' : 'next-service-ok' %>">
+                      <i class="fas fa-<%= isDue ? 'exclamation-triangle' : isUpcoming ? 'clock' : 'check-circle' %>"></i>
+                      <%= new Date(l.next_service_date).toLocaleDateString('en-LK', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                      <% if (isDue) { %>
+                        <span style="font-size:9px;">(Due)</span>
+                      <% } else if (isUpcoming) { %>
+                        <span style="font-size:9px;">(Soon)</span>
+                      <% } %>
+                    </span>
+                  <% } else { %>
+                    <span style="color:#b5a69a; font-size:13px;">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(l.status === 'pending') { %>
+                    <span class="badge-status pending">🟡 Pending</span>
+                  <% } else if(l.status === 'in_progress') { %>
+                    <span class="badge-status in_progress">🔵 In Progress</span>
+                  <% } else { %>
+                    <span class="badge-status completed">🟢 Completed</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(l.recorded_by_name) { %>
+                    <span style="background:#faf7f5; padding:2px 10px; border-radius:12px; font-size:12px;">
+                      <i class="fas fa-user" style="color:#8B1A1A;"></i> <%= l.recorded_by_name %>
+                    </span>
+                  <% } else { %>
+                    <span style="color:#b5a69a; font-size:13px;">—</span>
+                  <% } %>
+                </td>
+                
+                  <td class="text-center">
+  <div class="d-flex align-items-center justify-content-center gap-1">
+    <a href="/maintenance/view/<%= l.maintenance_id %>"
+       style="background:#e8f0fe; color:#1a56db; border-radius:8px; padding:4px 10px; text-decoration:none; border:2px solid #e8f0fe;">
+      <i class="fas fa-eye"></i>
+    </a>
+    <a href="/maintenance/edit/<%= l.maintenance_id %>"
+       class="btn-sm-outline edit"
+       title="Edit">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="/maintenance/delete/<%= l.maintenance_id %>"
+       class="btn-sm-outline delete"
+       onclick="return confirm('Delete this maintenance record?')"
+       title="Delete">
+      <i class="fas fa-trash"></i>
+    </a>
+  </div>
+</td>
+                
+              </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 •
+      <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

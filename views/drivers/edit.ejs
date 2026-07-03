@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SRMSS — Edit Driver</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .card-custom { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .form-label { font-weight: 600; font-size: 13px; color: #4a3a32; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 10px 14px; font-size: 14px; background: #fcf9f7; transition: all 0.3s; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 4px rgba(139,26,26,0.1); background: white; }
+    .btn-primary { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-primary:hover { background: #7a1515; color: white; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 10px 28px; }
+  </style>
+</head>
+<body>
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div>
+    <div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div>
+    <div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i> SRMSS</div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i> <span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i> <span>Schedules</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i> <span>Buses</span></a>
+    <a href="/drivers" class="active"><i class="fas fa-id-card"></i> <span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i> <span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i> <span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i> <span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-edit" style="color:#8B1A1A;margin-right:8px;"></i>Edit Driver</h5>
+      <a href="/drivers" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Back
+      </a>
+    </div>
+
+    <div class="card-custom">
+      <% if(error) { %>
+        <div class="alert alert-danger" style="border-radius:10px; border-left:4px solid #8B1A1A;">
+          <i class="fas fa-exclamation-circle me-2"></i> <%= error %>
+        </div>
+      <% } %>
+      <form action="/drivers/edit/<%= driver.driver_id %>" method="POST">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-user me-2" style="color:#8B1A1A;"></i>Full Name *</label>
+            <input type="text" name="full_name" class="form-control" value="<%= driver.full_name %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-phone me-2" style="color:#8B1A1A;"></i>Phone</label>
+            <input type="text" name="phone" class="form-control" value="<%= driver.phone || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-id-card me-2" style="color:#8B1A1A;"></i>License No *</label>
+            <input type="text" name="license_no" class="form-control" value="<%= driver.license_no %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-calendar me-2" style="color:#8B1A1A;"></i>License Expiry *</label>
+            <input type="date" name="license_expiry" class="form-control" value="<%= driver.license_expiry ? new Date(driver.license_expiry).toISOString().split('T')[0] : '' %>" required>
+          </div>
+
+          <!-- License Issue Date -->
+<div class="col-md-6">
+  <label class="form-label"><i class="fas fa-calendar-check me-2" style="color:#8B1A1A;"></i>License Issue Date</label>
+  <input type="date" name="license_issue_date" class="form-control" 
+         value="<%= driver.license_issue_date ? new Date(driver.license_issue_date).toISOString().split('T')[0] : '' %>">
+</div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-clock me-2" style="color:#8B1A1A;"></i>Working Hours</label>
+            <input type="number" name="working_hours" class="form-control" value="<%= driver.working_hours || 0 %>" step="0.01">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-circle me-2" style="color:#8B1A1A;"></i>Status</label>
+            <select name="status" class="form-select">
+              <option value="available">✅ Available</option>
+<option value="on_duty">🟠 On Duty</option>
+<option value="off">⚫ Off Duty</option>
+<option value="leave">🟡 On Leave</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4 pt-3" style="border-top: 2px solid #f5f0eb;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Update Driver
+          </button>
+          <a href="/drivers" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-times me-1"></i>Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

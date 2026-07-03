@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Edit Route</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .card-custom { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .card-title { font-weight: 700; color: #3a2a22; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #f5f0eb; }
+    .form-label { font-weight: 600; font-size: 13px; color: #4a3a32; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 10px 14px; font-size: 14px; background: #fcf9f7; transition: all 0.3s; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 4px rgba(139,26,26,0.1); background: white; }
+    .btn-primary { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-primary:hover { background: #7a1515; color: white; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 10px 28px; }
+    .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .required-star { color: #8B1A1A; font-weight: 700; }
+    .route-badge { background: #fdf2ee; color: #8B1A1A; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-left: 8px; }
+    .stops-section { background: #faf7f5; border-radius: 12px; padding: 20px; border: 2px dashed #eddfd7; }
+    .stop-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .stop-number { background: #8B1A1A; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .btn-add-stop { background: #e8f5ee; color: #006633; border: 2px solid #006633; border-radius: 10px; padding: 8px 20px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .btn-add-stop:hover { background: #006633; color: white; }
+    .btn-remove-stop { background: #fdf2ee; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; flex-shrink: 0; }
+    .btn-remove-stop:hover { background: #8B1A1A; color: white; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes" class="active"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-edit" style="color:#8B1A1A;margin-right:8px;"></i>Edit Route
+        <span class="route-badge"><%= route.route_name %></span>
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <a href="/routes" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+      </div>
+    </div>
+
+    <div class="card-custom">
+      <div class="card-title">
+        <i class="fas fa-route" style="color:#8B1A1A; margin-right:8px;"></i>Route Details
+        <span style="font-size:12px; color:#8a7a6e; font-weight:400; margin-left:8px;">* Required fields</span>
+      </div>
+
+      <% if(error) { %>
+        <div class="alert alert-danger" style="border-radius:10px; border-left:4px solid #8B1A1A; background:#fdf2ee; color:#8B1A1A;">
+          <i class="fas fa-exclamation-circle me-2"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/routes/edit/<%= route.route_id %>" method="POST">
+        <div class="row g-4">
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-tag me-2" style="color:#8B1A1A;"></i>Route Name <span class="required-star">*</span></label>
+            <input type="text" name="route_name" class="form-control" value="<%= route.route_name %>" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-ruler me-2" style="color:#8B1A1A;"></i>Distance (km)</label>
+            <input type="number" name="distance_km" class="form-control" value="<%= route.distance_km || '' %>" step="0.01">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-location-dot me-2" style="color:#8B1A1A;"></i>Start Point <span class="required-star">*</span></label>
+            <input type="text" name="start_point" class="form-control" value="<%= route.start_point %>" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-location-dot me-2" style="color:#006633;"></i>End Point <span class="required-star">*</span></label>
+            <input type="text" name="end_point" class="form-control" value="<%= route.end_point %>" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-circle me-2" style="color:#8B1A1A;"></i>Status</label>
+            <select name="status" class="form-select">
+              <option value="active" <%= route.status === 'active' ? 'selected' : '' %>>🟢 Active</option>
+              <option value="inactive" <%= route.status === 'inactive' ? 'selected' : '' %>>🔴 Inactive</option>
+            </select>
+          </div>
+
+          <!-- INTERMEDIARY STOPS -->
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="fas fa-map-pin me-2" style="color:#8B1A1A;"></i>Intermediary Stops
+              <span style="font-size:11px; color:#8a7a6e; font-weight:400; margin-left:8px;">Optional — stops between start and end</span>
+            </label>
+
+            <% if(existingStops && existingStops.length > 0) { %>
+              <div style="background:#e8f5ee; border-radius:8px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#006633;">
+                <i class="fas fa-info-circle me-1"></i>
+                Current stops: <strong><%= existingStops.join(' → ') %></strong>
+              </div>
+            <% } %>
+
+            <div class="stops-section">
+              <div id="stopsContainer">
+                <% if(existingStops && existingStops.length > 0) { %>
+                  <% existingStops.forEach((stop, i) => { %>
+                    <div class="stop-item" id="stop_<%= i+1 %>">
+                      <span class="stop-number"><%= i+1 %></span>
+                      <input type="text" name="stops[]" class="form-control" value="<%= stop %>">
+                      <button type="button" class="btn-remove-stop" onclick="removeStop(<%= i+1 %>)">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  <% }) %>
+                <% } %>
+              </div>
+              <button type="button" class="btn-add-stop" onclick="addStop()">
+                <i class="fas fa-plus me-2"></i>Add Stop
+              </button>
+              <div style="font-size:11px; color:#8a7a6e; margin-top:8px;">
+                <i class="fas fa-info-circle me-1"></i>
+                Stops will be updated on Map View after saving
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-4 pt-3" style="border-top: 2px solid #f5f0eb;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Update Route
+          </button>
+          <a href="/routes" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-times me-1"></i>Cancel
+          </a>
+          <a href="/routes/delete/<%= route.route_id %>" class="btn btn-danger ms-2" onclick="return confirm('Delete this route?')">
+            <i class="fas fa-trash me-2"></i>Delete
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let stopCount = document.querySelectorAll('.stop-item').length;
+
+    function addStop() {
+      stopCount++;
+      const container = document.getElementById('stopsContainer');
+      const div = document.createElement('div');
+      div.className = 'stop-item';
+      div.id = 'stop_' + stopCount;
+      div.innerHTML = `
+        <span class="stop-number">${stopCount}</span>
+        <input type="text" name="stops[]" class="form-control" placeholder="e.g. Kadawatha, Gampaha...">
+        <button type="button" class="btn-remove-stop" onclick="removeStop(${stopCount})">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      container.appendChild(div);
+      updateStopNumbers();
+    }
+
+    function removeStop(id) {
+      const el = document.getElementById('stop_' + id);
+      if (el) el.remove();
+      updateStopNumbers();
+    }
+
+    function updateStopNumbers() {
+      const items = document.querySelectorAll('.stop-item .stop-number');
+      items.forEach((el, i) => { el.textContent = i + 1; });
+    }
+  </script>
+</body>
+</html>

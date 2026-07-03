@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Maintenance Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; margin: 0; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .card-custom { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; margin-bottom: 20px; }
+    .section-title { font-weight: 700; color: #3a2a22; font-size: 15px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #f5f0eb; }
+    .section-title i { color: #8B1A1A; margin-right: 8px; }
+    .info-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: flex-start; }
+    .info-label { font-size: 12px; color: #8a7a6e; font-weight: 600; min-width: 140px; }
+    .info-value { font-size: 14px; color: #3a2a22; font-weight: 500; }
+    .stat-mini { background: #faf7f5; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-mini .val { font-size: 22px; font-weight: 800; color: #8B1A1A; }
+    .stat-mini .lbl { font-size: 12px; color: #8a7a6e; margin-top: 2px; }
+    .type-badge { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .type-routine { background: #e8f0fe; color: #1a56db; }
+    .type-corrective { background: #fdf2ee; color: #8B1A1A; }
+    .type-preventive { background: #e8f5ee; color: #006633; }
+    .type-emergency { background: #fff3e0; color: #FF6600; }
+    .status-pending { background: #fff8e6; color: #856404; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-inprogress { background: #e8f0fe; color: #1a56db; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-completed { background: #e8f5ee; color: #006633; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .desc-box { background: #faf7f5; border-radius: 10px; padding: 14px 16px; font-size: 14px; color: #3a2a22; line-height: 1.6; border-left: 3px solid #8B1A1A; }
+    .btn-edit { background: linear-gradient(135deg, #FFD700, #F0C000); color: #3a2a22; border: none; border-radius: 10px; padding: 8px 20px; font-weight: 600; text-decoration: none; font-size: 13px; }
+    .btn-back { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 8px 16px; text-decoration: none; font-size: 13px; }
+    .next-service-box { background: linear-gradient(135deg, #e8f5ee, #d4edda); border-radius: 12px; padding: 16px; border-left: 4px solid #006633; }
+    .overdue-box { background: linear-gradient(135deg, #fdf2ee, #f8d7da); border-radius: 12px; padding: 16px; border-left: 4px solid #dc3545; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance" class="active"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-wrench" style="color:#8B1A1A; margin-right:8px;"></i>
+        Maintenance Details
+        <span style="background:#fdf2ee; color:#8B1A1A; padding:4px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-left:8px;">
+          #<%= maintenance.maintenance_id %>
+        </span>
+        <% if(maintenance.status === 'pending') { %>
+          <span class="status-pending ms-2">🟡 Pending</span>
+        <% } else if(maintenance.status === 'in_progress') { %>
+          <span class="status-inprogress ms-2">🔵 In Progress</span>
+        <% } else { %>
+          <span class="status-completed ms-2">🟢 Completed</span>
+        <% } %>
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <a href="/maintenance" class="btn-back">
+          <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+        <a href="/maintenance/edit/<%= maintenance.maintenance_id %>" class="btn-edit">
+          <i class="fas fa-pen me-1"></i>Edit
+        </a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val">LKR <%= parseFloat(maintenance.cost || 0).toFixed(0) %></div>
+          <div class="lbl">Total Cost</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val" style="font-size:16px; color:#006633;">
+            <%= maintenance.service_date ? new Date(maintenance.service_date).toLocaleDateString('en-LK') : 'N/A' %>
+          </div>
+          <div class="lbl">Service Date</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val" style="font-size:14px;">
+            <% if(maintenance.next_service_date) {
+              const daysLeft = Math.ceil((new Date(maintenance.next_service_date) - new Date()) / (1000*60*60*24));
+            %>
+              <span style="color:<%= daysLeft < 0 ? '#dc3545' : daysLeft <= 7 ? '#FF6600' : '#006633' %>">
+                <%= daysLeft < 0 ? Math.abs(daysLeft) + 'd overdue' : daysLeft + 'd left' %>
+              </span>
+            <% } else { %>
+              <span style="color:#b5a69a;">N/A</span>
+            <% } %>
+          </div>
+          <div class="lbl">Next Service</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val" style="font-size:14px; color:#8B1A1A;"><%= maintenance.type || 'N/A' %></div>
+          <div class="lbl">Type</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- LEFT -->
+      <div class="col-md-5">
+
+        <!-- Maintenance Info -->
+        <div class="card-custom">
+          <div class="section-title"><i class="fas fa-tools"></i>Maintenance Information</div>
+
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-tag me-1"></i>Type</span>
+            <span class="info-value">
+              <% const typeMap = {routine:'🔄 Routine', corrective:'🔧 Corrective', preventive:'🛡️ Preventive', emergency:'🚨 Emergency'}; %>
+              <span class="type-badge type-<%= maintenance.type %>">
+                <%= typeMap[maintenance.type] || maintenance.type %>
+              </span>
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-circle me-1"></i>Status</span>
+            <span class="info-value">
+              <% if(maintenance.status === 'pending') { %>
+                <span class="status-pending">🟡 Pending</span>
+              <% } else if(maintenance.status === 'in_progress') { %>
+                <span class="status-inprogress">🔵 In Progress</span>
+              <% } else { %>
+                <span class="status-completed">🟢 Completed</span>
+              <% } %>
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-calendar me-1"></i>Service Date</span>
+            <span class="info-value" style="font-weight:700; color:#8B1A1A;">
+              <%= maintenance.service_date ? new Date(maintenance.service_date).toLocaleDateString('en-LK', {year:'numeric', month:'long', day:'numeric'}) : 'N/A' %>
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-money-bill me-1"></i>Cost</span>
+            <span class="info-value" style="font-weight:700; color:#006633;">
+              LKR <%= parseFloat(maintenance.cost || 0).toFixed(2) %>
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-user me-1"></i>Recorded By</span>
+            <span class="info-value"><%= maintenance.recorded_by_name || 'N/A' %></span>
+          </div>
+        </div>
+
+        <!-- Bus Info -->
+        <div class="card-custom">
+          <div class="section-title"><i class="fas fa-bus-alt"></i>Bus Information</div>
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-hashtag me-1"></i>Registration</span>
+            <span class="info-value" style="font-weight:700; color:#8B1A1A;"><%= maintenance.registration_no || 'N/A' %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-car me-1"></i>Model</span>
+            <span class="info-value"><%= maintenance.model || 'N/A' %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-gas-pump me-1"></i>Fuel Type</span>
+            <span class="info-value"><%= maintenance.fuel_type || 'N/A' %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"><i class="fas fa-users me-1"></i>Capacity</span>
+            <span class="info-value"><%= maintenance.seating_capacity || 'N/A' %> seats</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col-md-7">
+
+        <!-- Description -->
+        <div class="card-custom">
+          <div class="section-title"><i class="fas fa-file-alt"></i>Description</div>
+          <% if(maintenance.description) { %>
+            <div class="desc-box"><%= maintenance.description %></div>
+          <% } else { %>
+            <div class="text-muted" style="font-size:13px; text-align:center; padding:20px;">
+              <i class="fas fa-file" style="font-size:28px; color:#eddfd7; display:block; margin-bottom:8px;"></i>
+              No description provided
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Next Service -->
+        <div class="card-custom">
+          <div class="section-title"><i class="fas fa-calendar-check"></i>Next Service Schedule</div>
+          <% if(maintenance.next_service_date) {
+            const nextDate = new Date(maintenance.next_service_date);
+            const today = new Date();
+            const daysLeft = Math.ceil((nextDate - today) / (1000*60*60*24));
+            const isOverdue = daysLeft < 0;
+          %>
+            <div class="<%= isOverdue ? 'overdue-box' : 'next-service-box' %>">
+              <div style="font-size:13px; font-weight:600; color:<%= isOverdue ? '#dc3545' : '#006633' %>; margin-bottom:6px;">
+                <i class="fas fa-<%= isOverdue ? 'exclamation-triangle' : 'calendar-check' %> me-2"></i>
+                <%= isOverdue ? '⚠️ OVERDUE!' : '✅ Upcoming Service' %>
+              </div>
+              <div style="font-size:20px; font-weight:800; color:<%= isOverdue ? '#dc3545' : '#006633' %>; margin-bottom:4px;">
+                <%= nextDate.toLocaleDateString('en-LK', {year:'numeric', month:'long', day:'numeric'}) %>
+              </div>
+              <div style="font-size:13px; color:#5a4a3a;">
+                <% if(isOverdue) { %>
+                  <strong><%= Math.abs(daysLeft) %> days overdue</strong> — Service required immediately!
+                <% } else if(daysLeft === 0) { %>
+                  <strong>Due today!</strong>
+                <% } else { %>
+                  <strong><%= daysLeft %> days remaining</strong>
+                <% } %>
+              </div>
+            </div>
+          <% } else { %>
+            <div class="text-muted" style="font-size:13px; text-align:center; padding:20px;">
+              <i class="fas fa-calendar" style="font-size:28px; color:#eddfd7; display:block; margin-bottom:8px;"></i>
+              No next service date set
+            </div>
+          <% } %>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

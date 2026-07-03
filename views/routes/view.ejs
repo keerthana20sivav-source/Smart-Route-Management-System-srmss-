@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Route Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .card-custom { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; margin-bottom: 24px; }
+    .stat-mini { background: #faf7f5; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-mini .val { font-size: 22px; font-weight: 800; color: #8B1A1A; }
+    .stat-mini .lbl { font-size: 12px; color: #8a7a6e; }
+    .route-timeline { position: relative; padding-left: 32px; }
+    .route-timeline::before { content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, #8B1A1A, #FFD700, #006633); }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-dot { position: absolute; left: -26px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 2px currentColor; }
+    .timeline-dot.start { color: #8B1A1A; background: #8B1A1A; }
+    .timeline-dot.stop { color: #FFD700; background: #FFD700; }
+    .timeline-dot.end { color: #006633; background: #006633; }
+    .timeline-content { background: #faf7f5; border-radius: 10px; padding: 12px 16px; }
+    .timeline-label { font-size: 10px; text-transform: uppercase; font-weight: 600; color: #8a7a6e; margin-bottom: 2px; }
+    .timeline-name { font-weight: 700; color: #3a2a22; font-size: 15px; }
+    .timeline-coords { font-size: 11px; color: #b5a69a; margin-top: 2px; }
+    #routeMap { height: 280px; border-radius: 12px; border: 2px solid #eddfd7; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 6px 16px; }
+    .badge-active { background: #e8f5ee; color: #006633; padding: 4px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .badge-inactive { background: #f5f0eb; color: #8a7a6e; padding: 4px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes" class="active"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-route" style="color:#8B1A1A; margin-right:8px;"></i><%= route.route_name %>
+        <% if(route.status === 'active') { %>
+          <span class="badge-active ms-2"><i class="fas fa-circle" style="font-size:8px;"></i> Active</span>
+        <% } else { %>
+          <span class="badge-inactive ms-2"><i class="fas fa-circle" style="font-size:8px;"></i> Inactive</span>
+        <% } %>
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <a href="/routes" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Back</a>
+        <a href="/routes/edit/<%= route.route_id %>" class="btn btn-sm" style="background:#8B1A1A; color:white; border-radius:10px; padding:6px 16px;">
+          <i class="fas fa-pen me-1"></i>Edit
+        </a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val"><%= route.distance_km || 0 %> km</div>
+          <div class="lbl">Total Distance</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val"><%= stops.length %></div>
+          <div class="lbl">Total Stops</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val"><%= totalSchedules %></div>
+          <div class="lbl">Schedules</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-mini">
+          <div class="val" style="font-size:16px;">LKR <%= parseFloat(fuelStats.total_cost || 0).toFixed(0) %></div>
+          <div class="lbl">Fuel Cost</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Route Timeline -->
+      <div class="col-md-5">
+        <div class="card-custom">
+          <h6 style="font-weight:700; color:#3a2a22; margin-bottom:20px;">
+            <i class="fas fa-map-signs me-2" style="color:#8B1A1A;"></i>Route Stops
+            <span style="background:#fdf2ee; color:#8B1A1A; padding:2px 10px; border-radius:12px; font-size:11px; margin-left:8px;">
+              <%= stops.length %> stops
+            </span>
+          </h6>
+
+          <% if(stops.length === 0) { %>
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-map-pin" style="font-size:32px; color:#eddfd7; display:block; margin-bottom:8px;"></i>
+              No stops configured
+            </div>
+          <% } else { %>
+            <div class="route-timeline">
+              <% stops.forEach((s, i) => {
+                let dotClass = 'stop';
+                let label = `Stop ${i}`;
+                if (i === 0) { dotClass = 'start'; label = 'Start Point'; }
+                else if (i === stops.length - 1) { dotClass = 'end'; label = 'End Point'; }
+              %>
+              <div class="timeline-item">
+                <div class="timeline-dot <%= dotClass %>"></div>
+                <div class="timeline-content">
+                  <div class="timeline-label"><%= label %></div>
+                  <div class="timeline-name"><%= s.stop_name %></div>
+                  <% if(s.latitude && s.longitude) { %>
+                    <div class="timeline-coords">
+                      <i class="fas fa-map-pin" style="font-size:9px;"></i>
+                      <%= parseFloat(s.latitude).toFixed(4) %>, <%= parseFloat(s.longitude).toFixed(4) %>
+                    </div>
+                  <% } else { %>
+                    <div class="timeline-coords" style="color:#FF6600;">
+                      <i class="fas fa-exclamation-triangle" style="font-size:9px;"></i> Coordinates not set
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="col-md-7">
+        <div class="card-custom">
+          <h6 style="font-weight:700; color:#3a2a22; margin-bottom:16px;">
+            <i class="fas fa-map me-2" style="color:#8B1A1A;"></i>Route Map
+          </h6>
+          <div id="routeMap"></div>
+          <div style="font-size:11px; color:#8a7a6e; margin-top:8px;">
+            <i class="fas fa-circle" style="color:#8B1A1A; font-size:8px;"></i> Start &nbsp;
+            <i class="fas fa-circle" style="color:#FFD700; font-size:8px;"></i> Stop &nbsp;
+            <i class="fas fa-circle" style="color:#006633; font-size:8px;"></i> End
+          </div>
+        </div>
+
+        <!-- Route Info -->
+        <div class="card-custom">
+          <h6 style="font-weight:700; color:#3a2a22; margin-bottom:16px;">
+            <i class="fas fa-info-circle me-2" style="color:#8B1A1A;"></i>Route Information
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">Route Name</small>
+              <div style="font-weight:600;"><%= route.route_name %></div>
+            </div>
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">Distance</small>
+              <div style="font-weight:600;"><%= route.distance_km || 'N/A' %> km</div>
+            </div>
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">Start Point</small>
+              <div style="font-weight:600; color:#8B1A1A;"><i class="fas fa-location-dot me-1"></i><%= route.start_point %></div>
+            </div>
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">End Point</small>
+              <div style="font-weight:600; color:#006633;"><i class="fas fa-location-dot me-1"></i><%= route.end_point %></div>
+            </div>
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">Total Fuel Used</small>
+              <div style="font-weight:600; color:#FF6600;"><%= parseFloat(fuelStats.total_liters || 0).toFixed(2) %> L</div>
+            </div>
+            <div class="col-md-6">
+              <small style="color:#8a7a6e;">Created</small>
+              <div style="font-weight:600; font-size:12px;"><%= route.created_at ? new Date(route.created_at).toLocaleDateString() : 'N/A' %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const stops = <%- JSON.stringify(stops) %>;
+    const map = L.map('routeMap');
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const validStops = stops.filter(s => s.latitude && s.longitude);
+
+    if (validStops.length === 0) {
+      map.setView([7.8731, 80.7718], 7);
+      L.popup().setLatLng([7.8731, 80.7718]).setContent('No coordinates available').openOn(map);
+    } else {
+      const coords = validStops.map(s => [parseFloat(s.latitude), parseFloat(s.longitude)]);
+
+      // Draw route line
+      L.polyline(coords, { color: '#8B1A1A', weight: 4, opacity: 0.8 }).addTo(map);
+
+      // Add markers
+      validStops.forEach((s, i) => {
+        const lat = parseFloat(s.latitude);
+        const lng = parseFloat(s.longitude);
+        let color = '#FFD700';
+        let label = `Stop ${i}`;
+        if (i === 0) { color = '#8B1A1A'; label = 'Start'; }
+        else if (i === validStops.length - 1) { color = '#006633'; label = 'End'; }
+
+        const icon = L.divIcon({
+          html: `<div style="background:${color}; width:14px; height:14px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+          className: '', iconSize: [14, 14], iconAnchor: [7, 7]
+        });
+
+        L.marker([lat, lng], { icon })
+          .addTo(map)
+          .bindPopup(`<strong>${label}</strong><br>${s.stop_name}`);
+      });
+
+      // Fit map to route
+      map.fitBounds(coords, { padding: [20, 20] });
+    }
+  </script>
+</body>
+</html>

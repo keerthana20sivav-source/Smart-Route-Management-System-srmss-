@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SRMSS — Bus Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .card-custom { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; margin-bottom: 24px; }
+    .stat-mini { background: #faf7f5; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-mini .val { font-size: 22px; font-weight: 800; color: #8B1A1A; }
+    .stat-mini .lbl { font-size: 12px; color: #8a7a6e; }
+    .table thead th { background: #faf7f5; color: #5a4a3a; font-weight: 600; font-size: 12px; text-transform: uppercase; padding: 10px 16px; border-bottom: 2px solid #f5f0eb; }
+    .table tbody td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid #f5f0eb; vertical-align: middle; }
+    .bus-avatar { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .badge-routine { background: #e8f5ee; color: #006633; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-corrective { background: #fdf0e6; color: #FF6600; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-preventive { background: #e8f0fe; color: #1a56db; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-emergency { background: #fdf2ee; color: #8B1A1A; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses" class="active"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-bus-alt" style="color:#8B1A1A; margin-right:8px;"></i>Bus Profile</h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <a href="/buses" class="btn btn-outline-secondary btn-sm" style="border-radius:10px; border:2px solid #eddfd7;">
+          <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+        <a href="/buses/edit/<%= bus.bus_id %>" class="btn btn-sm" style="background:#8B1A1A; color:white; border-radius:10px; padding:6px 16px;">
+          <i class="fas fa-pen me-1"></i>Edit
+        </a>
+      </div>
+    </div>
+
+    <!-- Bus Info -->
+    <div class="card-custom">
+      <div class="d-flex align-items-center gap-4 mb-4">
+        <div class="bus-avatar"><i class="fas fa-bus-alt"></i></div>
+        <div>
+          <h4 style="font-weight:800; color:#3a2a22; margin:0;"><%= bus.registration_no %></h4>
+          <span style="color:#8a7a6e; font-size:14px;"><%= bus.model || 'N/A' %></span>
+          <span style="margin-left:12px; background:<%= bus.status === 'available' ? '#e8f5ee' : bus.status === 'maintenance' ? '#fdf2ee' : '#fdf0e6' %>; color:<%= bus.status === 'available' ? '#006633' : bus.status === 'maintenance' ? '#8B1A1A' : '#FF6600' %>; padding:3px 14px; border-radius:20px; font-size:12px; font-weight:600;">
+            <%= bus.status %>
+          </span>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="stat-mini">
+            <div class="val"><%= bus.seating_capacity %></div>
+            <div class="lbl">Seats</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-mini">
+            <div class="val"><%= bus.mileage_km || 0 %> km</div>
+            <div class="lbl">Mileage</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-mini">
+            <div class="val"><%= maintenance.length %></div>
+            <div class="lbl">Services</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-mini">
+            <div class="val"><i class="fas fa-map-pin" style="font-size:18px;"></i></div>
+            <div class="lbl"><%= bus.current_location || 'Colombo' %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <small style="color:#8a7a6e;">Fuel Type</small>
+          <div style="font-weight:600;"><i class="fas fa-gas-pump me-1" style="color:#8B1A1A;"></i><%= bus.fuel_type || 'Diesel' %></div>
+        </div>
+        <div class="col-md-4">
+          <small style="color:#8a7a6e;">Total Fuel Cost</small>
+          <div style="font-weight:600; color:#FF6600;">LKR <%= totalFuelCost %></div>
+        </div>
+        <div class="col-md-4">
+          <small style="color:#8a7a6e;">Total Maintenance Cost</small>
+          <div style="font-weight:600; color:#8B1A1A;">LKR <%= totalMaintCost %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance History -->
+    <div class="card-custom">
+      <h6 style="font-weight:700; color:#3a2a22; margin-bottom:16px;">
+        <i class="fas fa-wrench me-2" style="color:#8B1A1A;"></i>Maintenance History
+        <span style="background:#fdf2ee; color:#8B1A1A; padding:3px 14px; border-radius:20px; font-size:12px; margin-left:8px;">
+          <%= maintenance.length %> records
+        </span>
+      </h6>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr><th>#</th><th>Type</th><th>Description</th><th>Cost</th><th>Service Date</th><th>Next Service</th></tr>
+          </thead>
+          <tbody>
+            <% if(maintenance.length === 0) { %>
+              <tr><td colspan="6" class="text-center text-muted py-4">
+                <i class="fas fa-wrench" style="font-size:32px; color:#eddfd7; display:block; margin-bottom:8px;"></i>
+                No maintenance records yet
+              </td></tr>
+            <% } else { %>
+              <% maintenance.forEach((m, i) => { %>
+                <tr>
+                  <td><strong><%= i+1 %></strong></td>
+                  <td>
+                    <% if(m.type === 'routine') { %><span class="badge-routine">🔄 Routine</span>
+                    <% } else if(m.type === 'corrective') { %><span class="badge-corrective">🔧 Corrective</span>
+                    <% } else if(m.type === 'preventive') { %><span class="badge-preventive">🛡️ Preventive</span>
+                    <% } else { %><span class="badge-emergency">🚨 Emergency</span><% } %>
+                  </td>
+                  <td style="max-width:200px; font-size:12px;"><%= m.description || '—' %></td>
+                  <td>LKR <%= parseFloat(m.cost||0).toFixed(0) %></td>
+                  <td style="font-size:12px;"><%= m.service_date ? new Date(m.service_date).toLocaleDateString() : 'N/A' %></td>
+                  <td style="font-size:12px; color:<%= m.next_service_date && new Date(m.next_service_date) < new Date() ? '#dc3545' : '#006633' %>;">
+                    <%= m.next_service_date ? new Date(m.next_service_date).toLocaleDateString() : '—' %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

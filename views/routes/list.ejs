@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Routes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; } .stripe-maroon2 { background: #8B1A1A; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .stats-badge { background: #fdf2ee; color: #8B1A1A; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .btn-primary { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 8px 20px; font-weight: 600; }
+    .btn-primary:hover { background: #7a1515; color: white; }
+    .btn-map { background: #1a56db; color: white; border: none; border-radius: 10px; padding: 8px 16px; font-weight: 600; font-size: 13px; }
+    .btn-map:hover { background: #1446b5; color: white; }
+    .card-custom { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .card-header-custom { padding: 16px 24px; background: #faf7f5; border-bottom: 2px solid #f5f0eb; display: flex; justify-content: space-between; align-items: center; }
+    .table thead th { background: #faf7f5; color: #5a4a3a; font-weight: 600; font-size: 12px; text-transform: uppercase; padding: 12px 16px; border-bottom: 2px solid #f5f0eb; }
+    .table tbody td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f5f0eb; vertical-align: middle; }
+    .table tbody tr:hover { background: #fdfaf8; }
+    .badge-active { background: #e8f5ee; color: #006633; padding: 4px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .badge-inactive { background: #f5f0eb; color: #8a7a6e; padding: 4px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .btn-sm-outline { border-radius: 8px; padding: 4px 10px; font-size: 13px; border: 2px solid #eddfd7; background: transparent; }
+    .btn-sm-outline.edit { color: #8B1A1A; }
+    .btn-sm-outline.edit:hover { background: #fdf2ee; border-color: #8B1A1A; }
+    .btn-sm-outline.delete { color: #dc3545; }
+    .btn-sm-outline.delete:hover { background: #fdf2ee; border-color: #dc3545; }
+    .search-box { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 3px solid #8B1A1A; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 8px 14px; font-size: 14px; background: #fcf9f7; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 3px rgba(139,26,26,0.1); }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon2"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes" class="active"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-route" style="color:#8B1A1A;margin-right:8px;"></i>Routes Management
+        <span class="stats-badge ms-2"><%= routes.length %> Routes</span>
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <a href="/routes/map" class="btn-map btn"><i class="fas fa-map me-1"></i>Map View</a>
+        <a href="/routes/add" class="btn btn-primary"><i class="fas fa-plus-circle me-1"></i>Add Route</a>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box">
+      <div class="row g-2">
+        <div class="col-md-5">
+          <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search route name, start or end point...">
+        </div>
+        <div class="col-md-3">
+          <select id="statusFilter" class="form-select">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+            <i class="fas fa-times me-1"></i>Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h6 style="font-weight:700; color:#3a2a22; margin:0;"><i class="fas fa-table" style="color:#8B1A1A;margin-right:8px;"></i>All Routes</h6>
+        <span style="font-size:12px; color:#8a7a6e;">
+          <i class="fas fa-circle" style="color:#006633; font-size:8px;"></i> Active &nbsp;
+          <i class="fas fa-circle" style="color:#8a7a6e; font-size:8px;"></i> Inactive
+        </span>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Route Name</th>
+              <th>Start Point</th>
+              <th>End Point</th>
+              <th>Distance</th>
+              <th>Stops</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(routes.length === 0) { %>
+              <tr><td colspan="7" class="text-center text-muted py-5">
+                <i class="fas fa-route" style="font-size:40px; color:#eddfd7; display:block; margin-bottom:10px;"></i>
+                No routes found — click "Add Route" to create one!
+              </td></tr>
+            <% } else { %>
+              <% routes.forEach((r, index) => { %>
+              <tr>
+                <td><strong><%= index + 1 %></strong></td>
+                <td><span style="font-weight:600;"><i class="fas fa-route" style="color:#8B1A1A; font-size:12px;"></i> <%= r.route_name %></span></td>
+                <td><i class="fas fa-location-dot" style="color:#8B1A1A; font-size:11px;"></i> <%= r.start_point %></td>
+                <td><i class="fas fa-location-dot" style="color:#006633; font-size:11px;"></i> <%= r.end_point %></td>
+                <td><strong><%= r.distance_km %></strong> <span style="color:#8a7a6e;">km</span></td>
+                <!-- distance td கீழ add பண்ணு -->
+<td>
+  <% if(r.stop_names) { %>
+    <span style="font-size:11px; color:#8a7a6e;">
+      <i class="fas fa-map-pin" style="color:#8B1A1A; font-size:10px;"></i>
+      <%= r.stop_names %>
+    </span>
+  <% } else { %>
+    <span style="color:#b5a69a; font-size:12px;">No stops</span>
+  <% } %>
+</td>
+                <td>
+                  <% if(r.status === 'active') { %>
+                    <span class="badge-active"><i class="fas fa-circle" style="font-size:8px;"></i> Active</span>
+                  <% } else { %>
+                    <span class="badge-inactive"><i class="fas fa-circle" style="font-size:8px;"></i> Inactive</span>
+                  <% } %>
+                </td>
+                <td class="text-center">
+  <a href="/routes/view/<%= r.route_id %>" class="btn-sm-outline" style="color:#1a56db;" title="View Details">
+    <i class="fas fa-eye"></i>
+  </a>
+  <a href="/routes/edit/<%= r.route_id %>" class="btn-sm-outline edit ms-1"><i class="fas fa-pen"></i></a>
+  <a href="/routes/delete/<%= r.route_id %>" class="btn-sm-outline delete ms-1" onclick="return confirm('Delete this route?')"><i class="fas fa-trash"></i></a>
+</td>
+              </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    function filterTable() {
+      const searchText = searchInput.value.toLowerCase();
+      const status = statusFilter.value;
+      tableRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const matchesSearch = text.includes(searchText);
+        const matchesStatus = !status || text.includes(status);
+        row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+      });
+    }
+
+    function clearFilters() {
+      searchInput.value = '';
+      statusFilter.value = '';
+      filterTable();
+    }
+
+    searchInput.addEventListener('input', filterTable);
+    statusFilter.addEventListener('change', filterTable);
+  </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; } .stripe-maroon2 { background: #8B1A1A; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139, 26, 26, 0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255, 215, 0, 0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255, 255, 255, 0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255, 255, 255, 0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255, 215, 0, 0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 16px; color: rgba(255, 150, 150, 0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255, 215, 0, 0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139, 26, 26, 0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .topbar .user-info { display: flex; align-items: center; gap: 12px; }
+    .topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .stat-card { background: white; border-radius: 16px; padding: 22px 24px; box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06); border-bottom: 3px solid transparent; height: 100%; }
+    .stat-card.primary { border-bottom-color: #8B1A1A; } .stat-card.gold { border-bottom-color: #FFD700; } .stat-card.green { border-bottom-color: #006633; } .stat-card.orange { border-bottom-color: #FF6600; }
+    .stat-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .stat-icon.red-bg { background: #fdf2ee; color: #8B1A1A; } .stat-icon.gold-bg { background: #fef9e6; color: #B8860B; } .stat-icon.green-bg { background: #e8f5ee; color: #006633; } .stat-icon.orange-bg { background: #fdf0e6; color: #FF6600; }
+    .stat-value { font-size: 30px; font-weight: 800; color: #2a1a12; } .stat-label { font-size: 13px; color: #8a7a6e; font-weight: 500; }
+    .table-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(139, 26, 26, 0.06); }
+    .table thead th { background: #faf7f5; color: #5a4a3a; font-weight: 600; font-size: 12px; text-transform: uppercase; padding: 12px 16px; }
+    .table tbody td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f5f0eb; }
+    .badge-on-time { background: #e8f5ee; color: #006633; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .badge-delayed { background: #fdf0e6; color: #FF6600; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .badge-completed { background: #e8f0fe; color: #1a56db; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+    .badge-cancelled { background: #fdf2ee; color: #8B1A1A; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon2"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard" class="active"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+
+    <!-- TOPBAR with Bell -->
+    <div class="topbar">
+      <h5><i class="fas fa-chart-simple" style="color:#8B1A1A; margin-right:8px;"></i>Dashboard</h5>
+      <div class="user-info">
+
+        <!-- Bell Icon -->
+        <div class="position-relative">
+          <button class="btn" style="background:#fdf2ee; border:none; border-radius:10px; padding:8px 12px;"
+                  onclick="toggleNotif()">
+            <i class="fas fa-bell" style="color:#8B1A1A; font-size:18px;"></i>
+            <% if(notifications && notifications.length > 0) { %>
+              <span style="position:absolute; top:-4px; right:-4px; background:#dc3545; color:white; border-radius:50%; width:18px; height:18px; font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                <%= notifications.length %>
+              </span>
+            <% } %>
+          </button>
+
+          <!-- Notification Panel -->
+          <div id="notifPanel" style="display:none; position:absolute; right:0; top:48px; width:380px; background:white; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.15); z-index:9999; border-top:4px solid #8B1A1A; overflow:hidden;">
+            <div style="padding:14px 18px; background:#faf7f5; border-bottom:1px solid #f5f0eb;">
+              <strong style="color:#3a2a22; font-size:14px;"><i class="fas fa-bell me-2" style="color:#8B1A1A;"></i>Notifications</strong>
+              <span style="float:right; font-size:12px; color:#8a7a6e;"><%= notifications ? notifications.length : 0 %> alerts</span>
+            </div>
+            <% if(!notifications || notifications.length === 0) { %>
+              <div style="padding:24px; text-align:center; color:#8a7a6e; font-size:13px;">
+                <i class="fas fa-check-circle" style="color:#006633; font-size:24px; display:block; margin-bottom:8px;"></i>
+                All good! No alerts.
+              </div>
+            <% } else { %>
+              <div style="max-height:350px; overflow-y:auto;">
+                <% notifications.forEach(n => { %>
+                  <div style="padding:12px 18px; border-bottom:1px solid #f5f0eb; display:flex; align-items:flex-start; gap:12px;">
+                    <div style="width:36px; height:36px; border-radius:10px; background:<%= n.level === 'danger' ? '#fdf2ee' : '#fff8e6' %>; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                      <i class="<%= n.icon %>" style="color:<%= n.level === 'danger' ? '#dc3545' : '#e6a817' %>;"></i>
+                    </div>
+                    <div style="font-size:13px; color:#3a2a22; line-height:1.5;"><%= n.message %></div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="user-avatar"><%= user.full_name ? user.full_name.charAt(0).toUpperCase() : 'A' %></div>
+        <span style="font-weight:600; color:#3a2a22;"><%= user.full_name || 'Admin' %></span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-card primary">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><div class="stat-value"><%= stats.totalRoutes || 0 %></div><div class="stat-label">Total Routes</div></div>
+            <div class="stat-icon red-bg"><i class="fas fa-route"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card gold">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><div class="stat-value"><%= stats.activeBuses || 0 %></div><div class="stat-label">Available Buses</div></div>
+            <div class="stat-icon gold-bg"><i class="fas fa-bus-alt"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card green">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><div class="stat-value"><%= stats.totalDrivers || 0 %></div><div class="stat-label">Total Drivers</div></div>
+            <div class="stat-icon green-bg"><i class="fas fa-id-card"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card orange">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><div class="stat-value"><%= stats.todaySchedules || 0 %></div><div class="stat-label">Today's Schedules</div></div>
+            <div class="stat-icon orange-bg"><i class="fas fa-calendar-day"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h6 class="mb-3" style="font-weight:700; color:#3a2a22;"><i class="fas fa-chart-pie me-2" style="color:#8B1A1A;"></i>Fleet Status</h6>
+          <canvas id="fleetChart" height="200"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h6 class="mb-3" style="font-weight:700; color:#3a2a22;"><i class="fas fa-chart-bar me-2" style="color:#8B1A1A;"></i>Weekly Trips</h6>
+          <canvas id="tripsChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- VEHICLE UTILIZATION -->
+<div class="stat-card mb-4">
+  <h6 class="mb-3" style="font-weight:700; color:#3a2a22;">
+    <i class="fas fa-gauge-high me-2" style="color:#8B1A1A;"></i>
+    Vehicle Utilization Rate (This Month)
+  </h6>
+  <% if(utilizationData && utilizationData.length > 0) { %>
+    <% utilizationData.forEach(b => { %>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span style="font-size:13px; font-weight:600;">
+            <i class="fas fa-bus-alt" style="color:#8B1A1A;"></i> <%= b.registration_no %>
+          </span>
+          <span style="font-size:13px; font-weight:700; color:<%= b.percentage > 70 ? '#006633' : b.percentage > 40 ? '#e6a817' : '#8B1A1A' %>;">
+            <%= b.percentage %>%
+          </span>
+        </div>
+        <div style="background:#f5f0eb; border-radius:10px; height:10px; overflow:hidden;">
+          <div style="
+            width:<%= b.percentage %>%;
+            height:100%;
+            background:<%= b.percentage > 70 ? '#006633' : b.percentage > 40 ? '#FFD700' : '#8B1A1A' %>;
+            border-radius:10px;
+            transition: width 1s ease;
+          "></div>
+        </div>
+        <div style="font-size:11px; color:#8a7a6e; margin-top:2px;">
+          <%= b.used_hours %> hrs used / 720 hrs available this month
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p style="color:#8a7a6e; font-size:13px; text-align:center; padding:20px;">
+      <i class="fas fa-info-circle me-2"></i>No schedule data available for this month
+    </p>
+  <% } %>
+</div>
+
+    <!-- FUEL SUMMARY -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="stat-card" style="border-bottom-color:#FF6600;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-value" style="font-size:22px;"><%= stats.monthlyFuel || 0 %> L</div>
+          <div class="stat-label">Fuel Used This Month</div>
+        </div>
+        <div class="stat-icon orange-bg"><i class="fas fa-gas-pump"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="stat-card" style="border-bottom-color:#1a56db;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-value" style="font-size:22px;">LKR <%= stats.monthlyFuelCost || 0 %></div>
+          <div class="stat-label">Fuel Cost This Month</div>
+        </div>
+        <div class="stat-icon gold-bg"><i class="fas fa-money-bill-wave"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- RECENT TRIPS -->
+    <div class="table-card">
+      <h6 class="mb-3"><i class="fas fa-clock-rotate-left" style="color:#8B1A1A; margin-right:8px;"></i>Recent Trip Status</h6>
+      <table class="table">
+        <thead><tr><th>Trip ID</th><th>Route</th><th>Departure</th><th>Status</th></tr></thead>
+        <tbody>
+          <% if (!trips || trips.length === 0) { %>
+            <tr><td colspan="4" class="text-center text-muted py-4">No trips found</td></tr>
+          <% } else { %>
+            <% trips.forEach(trip => { %>
+              <tr>
+                <td>#<%= trip.trip_id %></td>
+                <td><%= trip.route_name || 'N/A' %></td>
+                <td><%= trip.actual_departure ? new Date(trip.actual_departure).toLocaleString() : 'N/A' %></td>
+                <td>
+                  <% if(trip.status === 'on_time') { %><span class="badge-on-time">On Time</span>
+                  <% } else if(trip.status === 'delayed') { %><span class="badge-delayed">Delayed</span>
+                  <% } else if(trip.status === 'completed') { %><span class="badge-completed">Completed</span>
+                  <% } else { %><span class="badge-cancelled">Cancelled</span><% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function toggleNotif() {
+      const panel = document.getElementById('notifPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function(e) {
+      const panel = document.getElementById('notifPanel');
+      if (panel && !panel.contains(e.target) && !e.target.closest('button[onclick="toggleNotif()"]')) {
+        panel.style.display = 'none';
+      }
+    });
+
+    new Chart(document.getElementById('fleetChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Available', 'On Route', 'Maintenance'],
+        datasets: [{ data: [<%= stats.activeBuses || 0 %>, <%= stats.totalRoutes || 0 %>, 1], backgroundColor: ['#28a745', '#1a56db', '#ffc107'] }]
+      },
+      options: { responsive: true }
+    });
+
+    new Chart(document.getElementById('tripsChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{ label: 'Trips', data: [4,6,5,8,7,9,3], backgroundColor: '#1a56db' }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  </script>
+</body>
+</html>

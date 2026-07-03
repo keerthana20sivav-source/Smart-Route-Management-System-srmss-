@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Add Schedule</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-brand span { color: white; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a i { width: 20px; text-align: center; font-size: 16px; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .topbar .user-info { display: flex; align-items: center; gap: 12px; }
+    .topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .card-custom { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .card-title { font-weight: 700; color: #3a2a22; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #f5f0eb; }
+    .card-title i { color: #8B1A1A; margin-right: 10px; }
+    .form-label { font-weight: 600; font-size: 13px; color: #4a3a32; margin-bottom: 4px; }
+    .form-label i { color: #8B1A1A; margin-right: 6px; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 10px 14px; font-size: 14px; background: #fcf9f7; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 4px rgba(139,26,26,0.1); background: white; }
+    .btn-primary { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-primary:hover { background: #7a1515; color: white; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 10px 28px; }
+    .required-star { color: #8B1A1A; font-weight: 700; margin-left: 2px; }
+    .autofill-badge { background: #e8f5ee; color: #006633; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules" class="active"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-plus-circle" style="color:#8B1A1A; margin-right:8px;"></i>Add New Schedule</h5>
+      <div class="user-info">
+        <div class="user-avatar"><%= user ? user.full_name.charAt(0).toUpperCase() : 'A' %></div>
+        <span style="font-weight:600; color:#3a2a22;"><%= user ? user.full_name : 'Admin' %></span>
+      </div>
+    </div>
+
+    <div class="card-custom">
+      <div class="card-title">
+        <i class="fas fa-calendar-plus"></i>Schedule Details
+        <span style="font-size:12px; color:#8a7a6e; font-weight:400; margin-left:12px;">
+          <i class="fas fa-asterisk" style="color:#8B1A1A; font-size:8px;"></i> Required fields
+        </span>
+      </div>
+
+      <% if(error) { %>
+        <div class="alert alert-danger" style="border-radius:10px; border-left:4px solid #8B1A1A; background:#fdf2ee; color:#8B1A1A;">
+          <i class="fas fa-exclamation-circle me-2"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <div id="blockAlert" style="display:none; background:#fdf2ee; border-left:4px solid #dc3545; border-radius:10px; padding:12px 16px; color:#dc3545; font-weight:500; margin-bottom:16px;">
+        <i class="fas fa-ban me-2"></i><span id="blockMessage"></span>
+      </div>
+      <div id="warnAlert" style="display:none; background:#fff8e6; border-left:4px solid #ffc107; border-radius:10px; padding:12px 16px; color:#856404; font-weight:500; margin-bottom:16px;">
+        <i class="fas fa-triangle-exclamation me-2"></i><span id="warnMessage"></span>
+      </div>
+
+      <form action="/schedules/add" method="POST">
+        <div class="row g-4">
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-route"></i>Route <span class="required-star">*</span></label>
+            <select name="route_id" id="routeSelect" class="form-select" required>
+              <option value="">-- Select Route --</option>
+              <% if(routes && routes.length > 0) { routes.forEach(r => { %>
+                <option value="<%= r.route_id %>"><%= r.route_name %> (<%= r.start_point %> → <%= r.end_point %>)</option>
+              <% }) } %>
+            </select>
+            <div id="locationInfo" style="display:none; background:#e8f5ee; color:#006633; padding:8px 12px; border-radius:8px; font-size:12px; margin-top:8px; border-left:3px solid #006633;"></div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-bus-alt"></i>Bus
+              <span class="autofill-badge" id="busBadge" style="display:none;">Location Tagged ✓</span>
+            </label>
+            <select name="bus_id" id="busSelect" class="form-select">
+              <option value="">-- Select Bus --</option>
+              <% if(buses && buses.length > 0) { buses.forEach(b => { %>
+                <option value="<%= b.bus_id %>"><%= b.registration_no %><% if(b.model){ %> - <%= b.model %><% } %> (<%= b.seating_capacity %> seats)</option>
+              <% }) } %>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-id-card"></i>Driver
+              <span class="autofill-badge" id="driverBadge" style="display:none;">Location Tagged ✓</span>
+            </label>
+            <select name="driver_id" id="driverSelect" class="form-select">
+              <option value="">-- Select Driver --</option>
+              <% if(drivers && drivers.length > 0) { drivers.forEach(d => { %>
+                <option value="<%= d.driver_id %>"><%= d.full_name %><% if(d.phone){ %> - <%= d.phone %><% } %></option>
+              <% }) } %>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-clock"></i>Departure Time <span class="required-star">*</span></label>
+            <input type="datetime-local" name="departure_time" id="departureTime" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-clock"></i>Arrival Time <span class="required-star">*</span></label>
+            <input type="datetime-local" name="arrival_time" id="arrivalTime" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-repeat"></i>Schedule Type <span class="required-star">*</span></label>
+            <select name="schedule_type" class="form-select" required>
+  <option value="daily">📅 Daily</option>
+  <option value="weekly">📆 Weekly</option>
+  <option value="monthly">📋 Monthly</option>
+  <option value="maintenance_work">🔧 Maintenance Work</option>
+  <option value="unexpected_event">⚡ Unexpected Event</option>
+  <option value="special_event">🎉 Special Event</option>
+</select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-circle"></i>Status</label>
+            <select name="status" class="form-select">
+              <option value="scheduled">🟢 Scheduled</option>
+              <option value="cancelled">🔴 Cancelled</option>
+              <option value="emergency">🟠 Emergency</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="mt-4 pt-2" style="border-top: 2px solid #f5f0eb;">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Add Schedule</button>
+          <a href="/schedules" class="btn btn-outline-secondary ms-2"><i class="fas fa-times me-1"></i>Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ===== Route select — load buses + drivers with location tag =====
+    document.getElementById('routeSelect').addEventListener('change', function() {
+      const routeId = this.value;
+      if (!routeId) return;
+      fetch('/schedules/available/' + routeId)
+        .then(res => res.json())
+        .then(data => {
+          const busSelect = document.getElementById('busSelect');
+          const driverSelect = document.getElementById('driverSelect');
+          const locationInfo = document.getElementById('locationInfo');
+
+          busSelect.innerHTML = '<option value="">-- Select Bus --</option>';
+          data.buses.forEach(b => {
+            const isHere = b.current_location.toLowerCase().includes(data.city.toLowerCase());
+            const tag = isHere ? '✅' : '⚠️ Not here —';
+            busSelect.innerHTML += `<option value="${b.bus_id}" ${!isHere ? 'style="color:#cc0000;"' : ''}>
+              ${tag} ${b.registration_no} (${b.seating_capacity} seats) 📍${b.current_location}
+            </option>`;
+          });
+
+          driverSelect.innerHTML = '<option value="">-- Select Driver --</option>';
+          data.drivers.forEach(d => {
+            const isHere = d.current_location.toLowerCase().includes(data.city.toLowerCase());
+            const tag = isHere ? '✅' : '⚠️ Not here —';
+            driverSelect.innerHTML += `<option value="${d.driver_id}" ${!isHere ? 'style="color:#cc0000;"' : ''}>
+              ${tag} ${d.full_name} 📍${d.current_location}
+            </option>`;
+          });
+
+          if (locationInfo) {
+            locationInfo.innerHTML = `<i class="fas fa-map-pin me-1"></i> Route starts at <strong>${data.start_point}</strong> — ✅ = here, ⚠️ = different location`;
+            locationInfo.style.display = 'block';
+          }
+          document.getElementById('busBadge').style.display = 'inline';
+          document.getElementById('driverBadge').style.display = 'inline';
+        });
+    });
+
+    // ===== Alert helper =====
+    function showAlerts(data) {
+      const blockAlert = document.getElementById('blockAlert');
+      const warnAlert = document.getElementById('warnAlert');
+      const submitBtn = document.querySelector('button[type="submit"]');
+      blockAlert.style.display = 'none';
+      warnAlert.style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      if (data.status === 'block') {
+        document.getElementById('blockMessage').innerHTML = data.messages.map(m => `<div>${m}</div>`).join('');
+        blockAlert.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+      } else if (data.status === 'warning') {
+        document.getElementById('warnMessage').innerHTML = data.messages.map(m => `<div>${m}</div>`).join('');
+        warnAlert.style.display = 'block';
+      }
+    }
+
+    // ===== Maintenance check (no time needed) =====
+    function checkMaintenance() {
+      const busId = document.getElementById('busSelect').value;
+      if (!busId) return;
+      fetch('/schedules/check-maintenance?bus_id=' + busId)
+        .then(res => res.json())
+        .then(data => showAlerts(data));
+    }
+
+    // ===== Full conflict check =====
+    function checkConflict() {
+      const routeId = document.getElementById('routeSelect').value;
+      const busId = document.getElementById('busSelect').value;
+      const driverId = document.getElementById('driverSelect').value;
+      const departure = document.getElementById('departureTime').value;
+      const arrival = document.getElementById('arrivalTime').value;
+      if (!departure || !arrival) return;
+      const params = new URLSearchParams();
+      if (routeId) params.append('route_id', routeId);
+      if (busId) params.append('bus_id', busId);
+      if (driverId) params.append('driver_id', driverId);
+      params.append('departure', departure);
+      params.append('arrival', arrival);
+      fetch('/schedules/check-conflict?' + params.toString())
+        .then(res => res.json())
+        .then(data => showAlerts(data));
+    }
+
+    // ===== Event listeners =====
+    document.getElementById('busSelect').addEventListener('change', function() {
+      checkMaintenance();
+      checkConflict();
+    });
+    document.getElementById('driverSelect').addEventListener('change', checkConflict);
+    document.getElementById('departureTime').addEventListener('change', checkConflict);
+    document.getElementById('arrivalTime').addEventListener('change', checkConflict);
+  </script>
+</body>
+</html>

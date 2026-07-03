@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Edit Maintenance</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .card-custom { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .form-label { font-weight: 600; font-size: 13px; color: #4a3a32; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 10px 14px; font-size: 14px; background: #fcf9f7; transition: all 0.3s; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 4px rgba(139,26,26,0.1); background: white; }
+    .btn-warning { background: linear-gradient(135deg, #FFD700, #F0C000); color: #3a2a22; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-warning:hover { background: #e6b800; color: #3a2a22; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 10px 28px; }
+    .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-danger:hover { background: #bd2130; color: white; }
+    .required-star { color: #8B1A1A; font-weight: 700; margin-left: 2px; }
+    .maintenance-id-badge { background: #fdf2ee; color: #8B1A1A; padding: 4px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    @media (max-width: 768px) {
+      .sidebar { width: 72px; padding: 12px 0; }
+      .sidebar-brand { font-size: 16px; padding: 0 12px 12px 12px; justify-content: center; }
+      .sidebar-brand span, .sidebar-brand .brand-text, .sidebar-section, .sidebar a span, .sidebar .sri-badge { display: none; }
+      .sidebar a { justify-content: center; padding: 14px 0; }
+      .sidebar a i { font-size: 20px; margin: 0; }
+      .main { margin-left: 72px; padding: 20px 16px; }
+      .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .card-custom { padding: 20px; }
+      .btn-group-responsive { display: flex; flex-wrap: wrap; gap: 8px; }
+      .btn-group-responsive .btn { flex: 1; min-width: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div>
+    <div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div>
+    <div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon2"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i> SRMSS</div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance" class="active"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-edit" style="color:#8B1A1A;margin-right:8px;"></i>
+        Edit Maintenance
+        <span class="maintenance-id-badge ms-2">
+          <i class="fas fa-hashtag me-1"></i> #<%= maintenance.maintenance_id %>
+        </span>
+      </h5>
+      <a href="/maintenance" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Back
+      </a>
+    </div>
+
+    <div class="card-custom">
+      <% if(error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+      <% if(success) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+
+      <form action="/maintenance/edit/<%= maintenance.maintenance_id %>" method="POST">
+        <div class="row g-4">
+
+          <!-- Bus -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-bus-alt me-2" style="color:#8B1A1A;"></i>Bus *
+            </label>
+            <select name="bus_id" class="form-select" required>
+              <option value="">-- Select Bus --</option>
+              <% buses.forEach(b => { %>
+                <option value="<%= b.bus_id %>" <%= maintenance.bus_id == b.bus_id ? 'selected' : '' %>>
+                  <%= b.registration_no %>
+                  <% if (b.model) { %> - <%= b.model %><% } %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Type -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-tools me-2" style="color:#8B1A1A;"></i>Type *
+            </label>
+            <select name="type" class="form-select" required>
+              <option value="routine" <%= maintenance.type === 'routine' ? 'selected' : '' %>>🔄 Routine</option>
+              <option value="corrective" <%= maintenance.type === 'corrective' ? 'selected' : '' %>>🔧 Corrective</option>
+              <option value="preventive" <%= maintenance.type === 'preventive' ? 'selected' : '' %>>🛡️ Preventive</option>
+              <option value="emergency" <%= maintenance.type === 'emergency' ? 'selected' : '' %>>🚨 Emergency</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="fas fa-file-alt me-2" style="color:#8B1A1A;"></i>Description
+            </label>
+            <textarea name="description" class="form-control" rows="3"><%= maintenance.description || '' %></textarea>
+          </div>
+
+          <!-- Cost -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-money-bill me-2" style="color:#8B1A1A;"></i>Cost (Rs.)
+            </label>
+            <input type="number" name="cost" class="form-control" value="<%= maintenance.cost || 0 %>" step="0.01">
+          </div>
+
+          <!-- Service Date -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-calendar me-2" style="color:#8B1A1A;"></i>Service Date *
+            </label>
+            <input type="date" name="service_date" class="form-control" 
+                   value="<%= maintenance.service_date ? new Date(maintenance.service_date).toISOString().split('T')[0] : '' %>" required>
+          </div>
+
+          <!-- Next Service Date -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-calendar-check me-2" style="color:#8B1A1A;"></i>Next Service Date
+            </label>
+            <input type="date" name="next_service_date" class="form-control" 
+                   value="<%= maintenance.next_service_date ? new Date(maintenance.next_service_date).toISOString().split('T')[0] : '' %>">
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="fas fa-circle me-2" style="color:#8B1A1A;"></i>Status
+            </label>
+            <select name="status" class="form-select">
+              <option value="pending" <%= maintenance.status === 'pending' ? 'selected' : '' %>>🟡 Pending</option>
+              <option value="in_progress" <%= maintenance.status === 'in_progress' ? 'selected' : '' %>>🔵 In Progress</option>
+              <option value="completed" <%= maintenance.status === 'completed' ? 'selected' : '' %>>🟢 Completed</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="mt-4 pt-3" style="border-top: 2px solid #f5f0eb;">
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-save me-2"></i>Update Record
+          </button>
+          <a href="/maintenance" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-times me-1"></i>Cancel
+          </a>
+          <a href="/maintenance/delete/<%= maintenance.maintenance_id %>" class="btn btn-danger ms-2" 
+             onclick="return confirm('Delete this maintenance record?')">
+            <i class="fas fa-trash me-1"></i>Delete
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

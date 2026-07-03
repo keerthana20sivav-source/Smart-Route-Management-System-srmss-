@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Reports</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-brand span { color: white; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a i { width: 20px; text-align: center; font-size: 16px; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; flex-wrap: wrap; gap: 12px; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .btn-pdf { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size:13px; }
+    .btn-pdf:hover { color: white; background: #7a1515; }
+    .stat-card { background: white; border-radius: 14px; padding: 20px 16px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 3px solid #8B1A1A; text-align: center; height: 100%; }
+    .stat-card.primary { border-top-color: #8B1A1A; } .stat-card.gold { border-top-color: #FFD700; } .stat-card.green { border-top-color: #006633; } .stat-card.orange { border-top-color: #FF6600; } .stat-card.blue { border-top-color: #1a56db; } .stat-card.purple { border-top-color: #6f42c1; }
+    .stat-icon { font-size: 28px; color: #8B1A1A; margin-bottom: 4px; }
+    .stat-value { font-size: 22px; font-weight: 800; color: #3a2a22; }
+    .stat-label { font-size: 12px; color: #8a7a6e; font-weight: 500; }
+    .card-custom { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .card-header-custom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-header-custom h6 { font-weight: 700; color: #3a2a22; margin: 0; }
+    .card-header-custom h6 i { color: #8B1A1A; margin-right: 8px; }
+    .table { margin-bottom: 0; }
+    .table thead th { background: #faf7f5; color: #5a4a3a; font-weight: 600; font-size: 12px; text-transform: uppercase; padding: 10px 16px; border-bottom: 2px solid #f5f0eb; }
+    .table tbody td { padding: 10px 16px; vertical-align: middle; font-size: 13px; border-bottom: 1px solid #f5f0eb; }
+    .table tbody tr:hover { background: #fdfaf8; }
+    .rate-high { color: #006633; font-weight: 700; }
+    .rate-medium { color: #FF6600; font-weight: 700; }
+    .rate-low { color: #8B1A1A; font-weight: 700; }
+    .medal-1 { background: #FFD700; color: #3a2a22; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+    .medal-2 { background: #C0C0C0; color: #3a2a22; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+    .medal-3 { background: #CD7F32; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+    .progress-bar-custom { background: #f5f0eb; border-radius: 10px; height: 6px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; border-radius: 10px; }
+    .period-btn { border-radius: 20px; font-size: 12px; padding: 6px 16px; text-decoration: none; border: 2px solid #8B1A1A; font-weight: 600; }
+    .period-btn.active { background: #8B1A1A; color: white; }
+    .period-btn.inactive { background: white; color: #8B1A1A; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports" class="active"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5>
+        <i class="fas fa-chart-simple" style="color:#8B1A1A; margin-right:8px;"></i>Reports & Analytics
+        <span class="badge" style="background:#8B1A1A; color:white; padding:4px 14px; border-radius:20px; font-size:11px; margin-left:8px;">
+          <i class="fas fa-rotate-right"></i> Live Data
+        </span>
+        <span class="badge" style="background:#006633; color:white; padding:4px 14px; border-radius:20px; font-size:11px; margin-left:4px;">
+          <%= periodLabel || 'This Month' %>
+        </span>
+      </h5>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="user-avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+
+        <!-- Period Filter Buttons -->
+        <a href="/reports?period=week" class="period-btn <%= period==='week' ? 'active' : 'inactive' %>">📅 This Week</a>
+        <a href="/reports?period=month" class="period-btn <%= period==='month' ? 'active' : 'inactive' %>">📆 This Month</a>
+        <a href="/reports?period=all" class="period-btn <%= period==='all' ? 'active' : 'inactive' %>">📋 All Time</a>
+
+        <a href="/reports/pdf?period=<%= period %>" class="btn-pdf">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-2 col-4">
+        <div class="stat-card primary"><div class="stat-icon"><i class="fas fa-route"></i></div><div class="stat-value"><%= stats.totalRoutes||0 %></div><div class="stat-label">Routes</div></div>
+      </div>
+      <div class="col-md-2 col-4">
+        <div class="stat-card gold"><div class="stat-icon"><i class="fas fa-bus-alt"></i></div><div class="stat-value"><%= stats.totalBuses||0 %></div><div class="stat-label">Buses</div></div>
+      </div>
+      <div class="col-md-2 col-4">
+        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-id-card"></i></div><div class="stat-value"><%= stats.totalDrivers||0 %></div><div class="stat-label">Drivers</div></div>
+      </div>
+      <div class="col-md-2 col-4">
+        <div class="stat-card orange"><div class="stat-icon"><i class="fas fa-calendar-alt"></i></div><div class="stat-value"><%= stats.totalSchedules||0 %></div><div class="stat-label">Schedules</div></div>
+      </div>
+      <div class="col-md-2 col-4">
+        <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-gas-pump"></i></div><div class="stat-value"><%= parseFloat(stats.totalFuel||0).toFixed(0) %>L</div><div class="stat-label">Fuel (<%= periodLabel %>)</div></div>
+      </div>
+      <div class="col-md-2 col-4">
+        <div class="stat-card purple"><div class="stat-icon"><i class="fas fa-wrench"></i></div><div class="stat-value" style="font-size:16px;">LKR <%= parseFloat(stats.totalMaintenanceCost||0).toFixed(0) %></div><div class="stat-label">Maintenance</div></div>
+      </div>
+    </div>
+
+    <!-- TRIP COMPLETION RATE -->
+    <div class="card-custom mb-4">
+      <div class="card-header-custom">
+        <h6><i class="fas fa-chart-pie"></i>Trip Completion Rate — <span style="color:#006633;"><%= periodLabel %></span></h6>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-3 col-6">
+          <div class="text-center p-3" style="background:#faf7f5; border-radius:12px;">
+            <div style="font-size:28px; font-weight:800; color:#3a2a22;"><%= tripStats&&tripStats.total_trips ? tripStats.total_trips : 0 %></div>
+            <div style="font-size:12px; color:#8a7a6e;">Total Trips</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="text-center p-3" style="background:#e8f5ee; border-radius:12px;">
+            <div style="font-size:28px; font-weight:800; color:#006633;">
+              <%= tripStats&&tripStats.total_trips&&tripStats.completed_trips ? ((tripStats.completed_trips/tripStats.total_trips)*100).toFixed(1) : 0 %>%
+            </div>
+            <div style="font-size:12px; color:#8a7a6e;">Completion Rate</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="text-center p-3" style="background:#e8f0fe; border-radius:12px;">
+            <div style="font-size:28px; font-weight:800; color:#1a56db;"><%= tripStats&&tripStats.on_time_trips ? tripStats.on_time_trips : 0 %></div>
+            <div style="font-size:12px; color:#8a7a6e;">On-Time Trips</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="text-center p-3" style="background:#fdf0e6; border-radius:12px;">
+            <div style="font-size:28px; font-weight:800; color:#FF6600;"><%= tripStats&&tripStats.delayed_trips ? tripStats.delayed_trips : 0 %></div>
+            <div style="font-size:12px; color:#8a7a6e;">Delayed Trips</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRIVER ON-TIME RECORD -->
+    <div class="card-custom mb-4">
+      <div class="card-header-custom">
+        <h6><i class="fas fa-id-card"></i>Driver On-Time Performance — <span style="color:#006633;"><%= periodLabel %></span></h6>
+        <span style="font-size:11px; color:#8a7a6e;">Best performers first 🏆</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Rank</th><th>Driver</th><th>Total Trips</th><th>On Time</th><th>Delayed</th><th>On-Time Rate</th><th>Performance</th></tr></thead>
+          <tbody>
+            <% if(driverPerformance && driverPerformance.length > 0) { %>
+              <% driverPerformance.forEach((d, i) => {
+                const rate = d.total_trips > 0 ? ((d.on_time / d.total_trips) * 100).toFixed(1) : 0;
+                const rateClass = rate > 80 ? 'rate-high' : rate > 50 ? 'rate-medium' : 'rate-low';
+              %>
+              <tr>
+                <td>
+                  <% if(i===0) { %><span class="medal-1">1</span>
+                  <% } else if(i===1) { %><span class="medal-2">2</span>
+                  <% } else if(i===2) { %><span class="medal-3">3</span>
+                  <% } else { %><strong><%= i+1 %></strong><% } %>
+                </td>
+                <td style="font-weight:600;"><i class="fas fa-user" style="color:#8B1A1A;"></i> <%= d.full_name %></td>
+                <td><%= d.total_trips || 0 %></td>
+                <td style="color:#006633; font-weight:600;"><%= d.on_time || 0 %></td>
+                <td style="color:#FF6600; font-weight:600;"><%= d.trip_delayed || 0 %></td>
+                <td><span class="<%= rateClass %>"><%= rate %>%</span></td>
+                <td style="min-width:100px;">
+                  <div class="progress-bar-custom">
+                    <div class="progress-fill" style="width:<%= rate %>%; background:<%= rate>80?'#006633':rate>50?'#FF6600':'#8B1A1A' %>;"></div>
+                  </div>
+                </td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="7" class="text-center text-muted py-4">No trip data available for <%= periodLabel %></td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MOST PROFITABLE + MOST DELAYS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card-custom">
+          <div class="card-header-custom">
+            <h6><i class="fas fa-trophy"></i>Most Profitable Routes</h6>
+            <span style="font-size:11px; color:#8a7a6e;">By schedule count</span>
+          </div>
+          <table class="table table-hover">
+            <thead><tr><th>#</th><th>Route</th><th>Schedules</th><th>Trips</th></tr></thead>
+            <tbody>
+              <% if(routePerformance && routePerformance.length > 0) { %>
+                <% const sorted = [...routePerformance].sort((a,b) => (b.total_schedules||0) - (a.total_schedules||0)).slice(0,5); %>
+                <% sorted.forEach((r, i) => { %>
+                <tr>
+                  <td>
+                    <% if(i===0) { %><span class="medal-1">1</span>
+                    <% } else if(i===1) { %><span class="medal-2">2</span>
+                    <% } else if(i===2) { %><span class="medal-3">3</span>
+                    <% } else { %><strong><%= i+1 %></strong><% } %>
+                  </td>
+                  <td style="font-weight:600; font-size:12px;"><i class="fas fa-route" style="color:#8B1A1A;"></i> <%= r.route_name %></td>
+                  <td><strong style="color:#006633;"><%= r.total_schedules||0 %></strong></td>
+                  <td><%= r.total_trips||0 %></td>
+                </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="4" class="text-center text-muted py-3">No data</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card-custom">
+          <div class="card-header-custom">
+            <h6><i class="fas fa-triangle-exclamation" style="color:#FF6600;"></i>Routes with Most Delays</h6>
+            <span style="font-size:11px; color:#8a7a6e;">Needs attention ⚠️</span>
+          </div>
+          <table class="table table-hover">
+            <thead><tr><th>#</th><th>Route</th><th>Delays</th><th>Delay Rate</th></tr></thead>
+            <tbody>
+              <% if(routePerformance && routePerformance.length > 0) { %>
+                <% const delaySort = [...routePerformance].sort((a,b) => (b.delayed_trips||0) - (a.delayed_trips||0)).slice(0,5); %>
+                <% delaySort.forEach((r, i) => {
+                  const delayRate = r.total_trips > 0 ? ((r.delayed_trips/r.total_trips)*100).toFixed(1) : 0;
+                %>
+                <tr>
+                  <td><strong><%= i+1 %></strong></td>
+                  <td style="font-weight:600; font-size:12px;"><i class="fas fa-route" style="color:#FF6600;"></i> <%= r.route_name %></td>
+                  <td><strong style="color:#FF6600;"><%= r.delayed_trips||0 %></strong></td>
+                  <td><span style="color:<%= delayRate>30?'#dc3545':delayRate>10?'#FF6600':'#006633' %>; font-weight:600;"><%= delayRate %>%</span></td>
+                </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="4" class="text-center text-muted py-3">No data</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUS FUEL EFFICIENCY + TREND CHART -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card-custom">
+          <div class="card-header-custom">
+            <h6><i class="fas fa-gas-pump"></i>Bus Fuel Efficiency — <span style="color:#006633;"><%= periodLabel %></span></h6>
+            <span style="font-size:11px; color:#8a7a6e;">Lower L = More efficient</span>
+          </div>
+          <table class="table table-hover">
+            <thead><tr><th>Bus</th><th>Fuel Type</th><th>Total Fuel</th><th>Refuels</th><th>Cost</th></tr></thead>
+            <tbody>
+              <% if(fuelByBus && fuelByBus.length > 0) { %>
+                <% fuelByBus.forEach((b, i) => { %>
+                <tr>
+                  <td style="font-weight:600;">
+                    <% if(i===0) { %><span class="medal-1">1</span> <% } %>
+                    <i class="fas fa-bus-alt" style="color:#8B1A1A;"></i> <%= b.registration_no||'N/A' %>
+                  </td>
+                  <td><span style="background:#faf7f5; padding:2px 8px; border-radius:8px; font-size:11px;"><%= b.fuel_type||'diesel' %></span></td>
+                  <td style="font-weight:700; color:<%= i===0?'#dc3545':'#8B1A1A' %>;"><%= parseFloat(b.total_liters||0).toFixed(1) %>L</td>
+                  <td><%= b.refuel_count||0 %></td>
+                  <td style="font-size:12px;">LKR <%= parseFloat(b.total_cost||0).toFixed(0) %></td>
+                </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="5" class="text-center text-muted py-3">No data</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card-custom">
+          <div class="card-header-custom">
+            <h6><i class="fas fa-chart-line"></i>Fuel Trend (Last 6 Months)</h6>
+          </div>
+          <canvas id="fuelTrendChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL ROUTE PERFORMANCE -->
+    <div class="card-custom mb-4">
+      <div class="card-header-custom">
+        <h6><i class="fas fa-route"></i>Full Route Performance Analysis</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Route</th><th>Schedules</th><th>Trips</th><th>Completed</th><th>On-Time</th><th>Delayed</th><th>Cancelled</th><th>Success Rate</th></tr></thead>
+          <tbody>
+            <% if(routePerformance && routePerformance.length > 0) { %>
+              <% routePerformance.forEach(r => {
+                const rate = r.total_trips > 0 ? ((r.completed_trips/r.total_trips)*100).toFixed(1) : 0;
+                const rateClass = rate > 80 ? 'rate-high' : rate > 50 ? 'rate-medium' : 'rate-low';
+              %>
+              <tr>
+                <td style="font-weight:600;"><i class="fas fa-route" style="color:#8B1A1A;"></i> <%= r.route_name||'N/A' %></td>
+                <td><%= r.total_schedules||0 %></td>
+                <td><%= r.total_trips||0 %></td>
+                <td style="color:#006633;"><%= r.completed_trips||0 %></td>
+                <td style="color:#1a56db;"><%= r.on_time_trips||0 %></td>
+                <td style="color:#FF6600;"><%= r.delayed_trips||0 %></td>
+                <td style="color:#8B1A1A;"><%= r.cancelled_trips||0 %></td>
+                <td><span class="<%= rateClass %>"><%= rate %>%</span></td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="8" class="text-center text-muted py-4">No route data available</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FUEL BY ROUTE -->
+    <div class="card-custom mb-4">
+      <div class="card-header-custom">
+        <h6><i class="fas fa-fire" style="color:#FF6600;"></i>High-Usage Routes (Fuel) — <span style="color:#006633;"><%= periodLabel %></span></h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>#</th><th>Route</th><th>Trips</th><th>Liters</th><th>Cost</th></tr></thead>
+          <tbody>
+            <% if(fuelByRoute && fuelByRoute.length > 0) { %>
+              <% fuelByRoute.forEach((f, i) => { %>
+              <tr>
+                <td>
+                  <% if(i===0) { %><span class="medal-1">1</span>
+                  <% } else if(i===1) { %><span class="medal-2">2</span>
+                  <% } else if(i===2) { %><span class="medal-3">3</span>
+                  <% } else { %><strong><%= i+1 %></strong><% } %>
+                </td>
+                <td style="font-weight:600;"><i class="fas fa-route" style="color:#8B1A1A;"></i> <%= f.route_name||'N/A' %></td>
+                <td><%= f.trip_count||0 %></td>
+                <td style="font-weight:700; color:#FF6600;"><%= parseFloat(f.total_liters||0).toFixed(2) %>L</td>
+                <td>LKR <%= parseFloat(f.total_cost||0).toFixed(0) %></td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="5" class="text-center text-muted py-3">No fuel data</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const fuelTrendData = <%- JSON.stringify(fuelTrends || []) %>;
+    const labels = fuelTrendData.map(f => f.month);
+    const litersData = fuelTrendData.map(f => parseFloat(f.total_liters) || 0);
+    new Chart(document.getElementById('fuelTrendChart'), {
+      type: 'line',
+      data: {
+        labels: labels.length > 0 ? labels : ['No Data'],
+        datasets: [{
+          label: 'Liters',
+          data: litersData.length > 0 ? litersData : [0],
+          borderColor: '#8B1A1A',
+          backgroundColor: 'rgba(139,26,26,0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#8B1A1A'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  </script>
+</body>
+</html>

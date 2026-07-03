@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SRMSS — Route Map</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; box-shadow: 4px 0 20px rgba(139,26,26,0.2); overflow-y: auto; }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .map-layout { display: flex; gap: 16px; }
+    .map-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; max-height: 580px; overflow-y: auto; }
+    .map-container { flex: 1; }
+    #map { height: 580px; border-radius: 16px; box-shadow: 0 4px 20px rgba(139,26,26,0.1); }
+    .panel-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 16px rgba(139,26,26,0.06); border-top: 3px solid #8B1A1A; }
+    .panel-title { font-weight: 700; color: #3a2a22; font-size: 13px; margin-bottom: 12px; }
+    .panel-title i { color: #8B1A1A; margin-right: 6px; }
+    .form-control, .form-select { border-radius: 8px; border: 2px solid #eddfd7; padding: 8px 12px; font-size: 13px; background: #fcf9f7; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 3px rgba(139,26,26,0.1); }
+    .route-item { padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; margin-bottom: 6px; }
+    .route-item:hover { background: #faf7f5; border-color: #eddfd7; }
+    .route-item.active-route { background: #fdf2ee; border-color: #8B1A1A; }
+    .route-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .route-name { font-weight: 600; font-size: 13px; color: #3a2a22; }
+    .route-sub { font-size: 11px; color: #8a7a6e; }
+    .stop-list { margin-top: 10px; padding-top: 10px; border-top: 1px solid #f5f0eb; display: none; }
+    .stop-list.show { display: block; }
+    .stop-list-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; color: #5a4a3a; }
+    .stop-mini-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .live-badge { display:inline-flex; align-items:center; gap:6px; background:#e8f5ee; color:#006633; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:#006633; animation: blink 1.5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .stat-row { display: flex; gap: 8px; }
+    .stat-mini { flex: 1; background: #faf7f5; border-radius: 8px; padding: 10px; text-align: center; }
+    .stat-mini .val { font-size: 18px; font-weight: 800; color: #8B1A1A; }
+    .stat-mini .lbl { font-size: 10px; color: #8a7a6e; }
+    .btn-clear { background: #fdf2ee; color: #8B1A1A; border: 2px solid #eddfd7; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-weight: 600; }
+    .btn-clear:hover { background: #8B1A1A; color: white; }
+    .no-routes { text-align: center; color: #b5a69a; padding: 20px; font-size: 13px; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 6px 16px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes" class="active"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-map-marked-alt" style="color:#8B1A1A;margin-right:8px;"></i>Route Map View</h5>
+      <div class="d-flex align-items-center gap-2">
+        <span class="live-badge"><span class="live-dot"></span>Live Tracking</span>
+        <a href="/routes" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+      </div>
+    </div>
+
+    <div class="map-layout">
+
+      <!-- LEFT PANEL -->
+      <div class="map-panel">
+
+        <!-- Stats -->
+        <div class="panel-card">
+          <div class="stat-row">
+            <div class="stat-mini">
+              <div class="val"><%= routes.length %></div>
+              <div class="lbl">Routes</div>
+            </div>
+            <div class="stat-mini">
+              <div class="val" id="totalStopsCount">0</div>
+              <div class="lbl">Stops</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="panel-card">
+          <div class="panel-title"><i class="fas fa-search"></i>Search & Filter</div>
+          <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search route name...">
+          <select id="filterSelect" class="form-select mb-2">
+            <option value="all">All Routes</option>
+            <option value="with_stops">With Stops</option>
+            <option value="no_stops">No Stops</option>
+          </select>
+          <button class="btn-clear w-100" onclick="clearFilters()">
+            <i class="fas fa-times me-1"></i>Clear Filters
+          </button>
+        </div>
+
+        <!-- Route List -->
+        <div class="panel-card" style="flex:1;">
+          <div class="panel-title"><i class="fas fa-route"></i>Routes <span id="routeCount" style="background:#fdf2ee; color:#8B1A1A; padding:2px 8px; border-radius:10px; font-size:11px;"></span></div>
+          <div id="routeList"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="panel-card">
+          <div class="panel-title"><i class="fas fa-circle-info"></i>Legend</div>
+          <div style="font-size:12px; display:flex; flex-direction:column; gap:6px;">
+            <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#8B1A1A; margin-right:6px;"></span>Start Point</div>
+            <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#FFD700; border:1px solid #ccc; margin-right:6px;"></span>Intermediary Stop</div>
+            <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#006633; margin-right:6px;"></span>End Point</div>
+            <div><span style="display:inline-block; width:18px; height:18px; border-radius:50%; background:#FFD700; margin-right:6px; font-size:10px; text-align:center; line-height:18px;">🚌</span>Live Bus</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAP -->
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-3" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const routeData = <%- JSON.stringify(routes) %>;
+    const colors = ['#8B1A1A','#006633','#1a56db','#FF6600','#7F77DD','#D85A30','#009688','#E91E63'];
+
+    const map = L.map('map').setView([7.8731, 80.7718], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Store route layers
+    const routeLayers = {};
+    let activeRouteIndex = null;
+
+    // Count total stops
+    let totalStops = 0;
+
+    // Draw all routes on map
+    routeData.forEach((route, index) => {
+      const color = colors[index % colors.length];
+      routeLayers[index] = { polyline: null, markers: [] };
+
+      if (route.latitudes && route.longitudes && route.stop_names) {
+        const lats = route.latitudes.split('|').map(Number);
+        const lngs = route.longitudes.split('|').map(Number);
+        const names = route.stop_names.split('|');
+        const latlngs = lats.map((lat, i) => [lat, lngs[i]]);
+
+        totalStops += names.length;
+
+        // Draw route line
+        const poly = L.polyline(latlngs, { color, weight: 4, opacity: 0.8 }).addTo(map);
+        routeLayers[index].polyline = poly;
+
+        // Draw stop markers
+        latlngs.forEach((latlng, i) => {
+          const isFirst = i === 0;
+          const isLast = i === latlngs.length - 1;
+          const isIntermediary = !isFirst && !isLast;
+
+          const dotColor = isFirst ? '#8B1A1A' : isLast ? '#006633' : '#FFD700';
+          const dotSize = isIntermediary ? 10 : 14;
+          const label = isFirst ? '🔴 Start' : isLast ? '🟢 End' : `🟡 Stop ${i}`;
+
+          const icon = L.divIcon({
+            className: '',
+            html: `<div style="width:${dotSize}px;height:${dotSize}px;background:${dotColor};border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [dotSize, dotSize],
+            iconAnchor: [dotSize/2, dotSize/2]
+          });
+
+          const marker = L.marker(latlng, { icon })
+            .addTo(map)
+            .bindPopup(`
+              <div style="font-family:'Segoe UI',sans-serif; min-width:140px;">
+                <strong style="color:#8B1A1A;">${names[i]}</strong><br>
+                <span style="font-size:11px; color:#666;">${label}</span><br>
+                <span style="font-size:11px; color:#8B1A1A;">${route.route_name}</span>
+              </div>
+            `);
+
+          routeLayers[index].markers.push(marker);
+        });
+      }
+    });
+
+    document.getElementById('totalStopsCount').textContent = totalStops;
+
+    // Build route list
+    function buildRouteList(filtered) {
+      const list = document.getElementById('routeList');
+      list.innerHTML = '';
+      document.getElementById('routeCount').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="no-routes"><i class="fas fa-search" style="font-size:24px; display:block; margin-bottom:8px; color:#eddfd7;"></i>No routes found</div>';
+        return;
+      }
+
+      filtered.forEach(({ route, index }) => {
+        const color = colors[index % colors.length];
+        const stopNames = route.stop_names ? route.stop_names.split('|') : [];
+        const stopCount = stopNames.length;
+
+        const div = document.createElement('div');
+        div.className = 'route-item' + (activeRouteIndex === index ? ' active-route' : '');
+        div.id = 'route-item-' + index;
+
+        // Build stop list HTML
+        let stopListHTML = '';
+        if (stopNames.length > 0) {
+          stopListHTML = `<div class="stop-list" id="stops-${index}">`;
+          stopNames.forEach((name, i) => {
+            const isFirst = i === 0;
+            const isLast = i === stopNames.length - 1;
+            const dotC = isFirst ? '#8B1A1A' : isLast ? '#006633' : '#FFD700';
+            const lbl = isFirst ? 'Start' : isLast ? 'End' : `Stop ${i}`;
+            stopListHTML += `
+              <div class="stop-list-item">
+                <div class="stop-mini-dot" style="background:${dotC}; border:1px solid #ddd;"></div>
+                <span>${name} <span style="color:#b5a69a; font-size:10px;">(${lbl})</span></span>
+              </div>`;
+          });
+          stopListHTML += `</div>`;
+        }
+
+        div.innerHTML = `
+          <div class="d-flex align-items-start gap-2" onclick="focusRoute(${index})">
+            <div class="route-dot mt-1" style="background:${color};"></div>
+            <div style="flex:1;">
+              <div class="route-name">${route.route_name}</div>
+              <div class="route-sub">${route.start_point} → ${route.end_point}</div>
+              <div style="font-size:11px; color:#8a7a6e; margin-top:2px;">
+                <i class="fas fa-map-pin" style="font-size:9px;"></i> ${stopCount} stops
+                ${route.distance_km ? `• ${route.distance_km} km` : ''}
+              </div>
+            </div>
+            ${stopCount > 0 ? `<button onclick="event.stopPropagation(); toggleStops(${index})" style="background:none; border:none; color:#8B1A1A; font-size:11px; cursor:pointer; padding:2px 6px; border-radius:6px; background:#fdf2ee;" title="Show stops">
+              <i class="fas fa-list" id="stops-icon-${index}"></i>
+            </button>` : ''}
+          </div>
+          ${stopListHTML}
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function focusRoute(index) {
+      const route = routeData[index];
+      activeRouteIndex = index;
+
+      // Highlight selected
+      document.querySelectorAll('.route-item').forEach(el => el.classList.remove('active-route'));
+      const el = document.getElementById('route-item-' + index);
+      if (el) el.classList.add('active-route');
+
+      if (route.latitudes) {
+        const lats = route.latitudes.split('|').map(Number);
+        const lngs = route.longitudes.split('|').map(Number);
+        const bounds = lats.map((lat, i) => [lat, lngs[i]]);
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    }
+
+    function toggleStops(index) {
+      const stopEl = document.getElementById('stops-' + index);
+      const iconEl = document.getElementById('stops-icon-' + index);
+      if (stopEl) {
+        stopEl.classList.toggle('show');
+        if (iconEl) iconEl.className = stopEl.classList.contains('show') ? 'fas fa-chevron-up' : 'fas fa-list';
+      }
+    }
+
+    // Search & Filter
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filter = document.getElementById('filterSelect').value;
+
+      const filtered = routeData.map((route, index) => ({ route, index })).filter(({ route }) => {
+        const matchSearch = !search ||
+          route.route_name.toLowerCase().includes(search) ||
+          (route.start_point && route.start_point.toLowerCase().includes(search)) ||
+          (route.end_point && route.end_point.toLowerCase().includes(search));
+
+        const hasStops = route.stop_names && route.stop_names.split('|').length > 0;
+        const matchFilter =
+          filter === 'all' ||
+          (filter === 'with_stops' && hasStops) ||
+          (filter === 'no_stops' && !hasStops);
+
+        return matchSearch && matchFilter;
+      });
+
+      buildRouteList(filtered);
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterSelect').value = 'all';
+      applyFilters();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('filterSelect').addEventListener('change', applyFilters);
+
+    // Initial build
+    buildRouteList(routeData.map((route, index) => ({ route, index })));
+  </script>
+
+  <!-- LIVE BUS TRACKING -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const busMarkers = {};
+
+    socket.on('busPositions', (positions) => {
+      positions.forEach(bus => {
+        const busIcon = L.divIcon({
+          className: '',
+          html: `<div style="width:24px;height:24px;background:#FFD700;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;">🚌</div>`,
+          iconSize: [24, 24], iconAnchor: [12, 12]
+        });
+
+        if (busMarkers[bus.bus_id]) {
+          busMarkers[bus.bus_id].setLatLng([bus.lat, bus.lng]);
+        } else {
+          busMarkers[bus.bus_id] = L.marker([bus.lat, bus.lng], { icon: busIcon })
+            .addTo(map)
+            .bindPopup(`<strong>🚌 ${bus.registration_no}</strong><br><span style="color:#8B1A1A;">${bus.route_name}</span><br><small style="color:green;">● Live</small>`);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

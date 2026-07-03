@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRMSS — Add Fuel Log</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f0eb; font-family: 'Segoe UI', sans-serif; }
+    .sri-lanka-stripes { position: fixed; top: 0; left: 0; width: 100%; height: 6px; display: flex; z-index: 1050; }
+    .stripe { flex: 1; height: 100%; }
+    .stripe-maroon { background: #8B1A1A; } .stripe-gold { background: #FFD700; } .stripe-green { background: #006633; } .stripe-orange { background: #FF6600; }
+    .sidebar { width: 260px; height: 100vh; background: linear-gradient(180deg, #8B1A1A 0%, #6B1010 100%); position: fixed; top: 6px; left: 0; padding: 20px 0; color: white; z-index: 1040; overflow-y: auto; box-shadow: 4px 0 20px rgba(139,26,26,0.2); }
+    .sidebar-brand { font-size: 22px; font-weight: 800; padding: 0 20px 18px 20px; border-bottom: 2px solid rgba(255,215,0,0.3); display: flex; align-items: center; gap: 10px; color: #FFD700; }
+    .sidebar-section { padding: 12px 20px 6px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,215,0,0.15); color: #FFD700; border-left-color: #FFD700; }
+    .sidebar a.logout-link { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; color: rgba(255,150,150,0.8); }
+    .sidebar .sri-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; margin: 12px 16px 0 16px; background: rgba(255,215,0,0.15); border-radius: 20px; font-size: 11px; color: #FFD700; }
+    .main { margin-left: 260px; padding: 30px; margin-top: 6px; }
+    .topbar { background: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(139,26,26,0.08); border-left: 4px solid #8B1A1A; }
+    .topbar h5 { font-weight: 700; color: #3a2a22; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .card-custom { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(139,26,26,0.06); border-top: 4px solid #8B1A1A; }
+    .card-title { font-weight: 700; color: #3a2a22; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #f5f0eb; }
+    .form-label { font-weight: 600; font-size: 13px; color: #4a3a32; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #eddfd7; padding: 10px 14px; font-size: 14px; background: #fcf9f7; transition: all 0.3s; }
+    .form-control:focus, .form-select:focus { border-color: #8B1A1A; box-shadow: 0 0 0 4px rgba(139,26,26,0.1); background: white; }
+    .btn-primary { background: linear-gradient(135deg, #8B1A1A, #A02020); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-weight: 600; }
+    .btn-primary:hover { background: #7a1515; color: white; }
+    .btn-outline-secondary { border-radius: 10px; border: 2px solid #eddfd7; color: #5a4a3a; padding: 10px 28px; }
+    .required-star { color: #8B1A1A; font-weight: 700; }
+    .auto-info { background: #e8f5ee; border-left: 4px solid #006633; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #3a2a22; display: none; margin-top: 8px; }
+    .auto-info.show { display: block; }
+    .calc-badge { background: #fff8e6; border: 1px solid #FFD700; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #856404; margin-top: 6px; display: none; }
+    .calc-badge.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="sri-lanka-stripes">
+    <div class="stripe stripe-maroon"></div><div class="stripe stripe-gold"></div>
+    <div class="stripe stripe-green"></div><div class="stripe stripe-orange"></div>
+    <div class="stripe stripe-maroon"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-bus"></i><span>SRMSS</span></div>
+    <div class="sidebar-section">Main Menu</div>
+    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+    <a href="/routes"><i class="fas fa-route"></i><span>Routes</span></a>
+    <a href="/schedules"><i class="fas fa-calendar-alt"></i><span>Schedules</span></a>
+    <a href="/routes/map"><i class="fas fa-map"></i><span>Map View</span></a>
+    <div class="sidebar-section">Management</div>
+    <a href="/buses"><i class="fas fa-bus-alt"></i><span>Buses</span></a>
+    <a href="/drivers"><i class="fas fa-id-card"></i><span>Drivers</span></a>
+    <a href="/fuel" class="active"><i class="fas fa-gas-pump"></i><span>Fuel Logs</span></a>
+    <a href="/maintenance"><i class="fas fa-wrench"></i><span>Maintenance</span></a>
+    <div class="sidebar-section">Analytics</div>
+    <a href="/reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+    <a href="/users"><i class="fas fa-users"></i><span>Users</span></a>
+    <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    <div class="sri-badge"><i class="fas fa-flag"></i>Sri Lanka</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h5><i class="fas fa-plus-circle" style="color:#8B1A1A; margin-right:8px;"></i>Add Fuel Log</h5>
+      <div class="d-flex align-items-center gap-2">
+        <div class="user-avatar"><%= user ? user.full_name.charAt(0).toUpperCase() : 'A' %></div>
+        <span style="font-weight:600; color:#3a2a22;"><%= user ? user.full_name : 'Admin' %></span>
+      </div>
+    </div>
+
+    <div class="card-custom">
+      <div class="card-title">
+        <i class="fas fa-gas-pump" style="color:#8B1A1A; margin-right:8px;"></i>Fuel Log Details
+        <span style="font-size:12px; color:#8a7a6e; font-weight:400; margin-left:8px;">* Required</span>
+      </div>
+
+      <% if(error) { %>
+        <div class="alert alert-danger" style="border-radius:10px; border-left:4px solid #8B1A1A; background:#fdf2ee; color:#8B1A1A;">
+          <i class="fas fa-exclamation-circle me-2"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/fuel/add" method="POST">
+        <div class="row g-4">
+
+          <!-- Bus -->
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-bus-alt me-1" style="color:#8B1A1A;"></i>Bus <span class="required-star">*</span></label>
+            <select name="bus_id" id="busSelect" class="form-select" required>
+              <option value="">-- Select Bus --</option>
+              <% buses.forEach(b => { %>
+                <option value="<%= b.bus_id %>">
+                  <%= b.registration_no %><% if(b.model){ %> - <%= b.model %><% } %> (<%= b.seating_capacity %> seats)
+                </option>
+              <% }) %>
+            </select>
+            <!-- Auto info -->
+            <div class="auto-info" id="autoInfo">
+              <i class="fas fa-magic me-1"></i>
+              <span id="autoInfoText"></span>
+            </div>
+          </div>
+
+          <!-- Route — auto filled -->
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-route me-1" style="color:#8B1A1A;"></i>Route</label>
+            <select name="route_id" id="routeSelect" class="form-select">
+              <option value="">-- Select Route --</option>
+              <% routes.forEach(r => { %>
+                <option value="<%= r.route_id %>"><%= r.route_name %> (<%= r.start_point %> → <%= r.end_point %>)</option>
+              <% }) %>
+            </select>
+            <div class="calc-badge" id="distanceBadge">
+              <i class="fas fa-road me-1"></i> <span id="distanceText"></span>
+            </div>
+          </div>
+
+          <!-- Liters — auto calculated -->
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-oil-can me-1" style="color:#8B1A1A;"></i>Liters <span class="required-star">*</span></label>
+            <input type="number" name="liters" id="litersInput" class="form-control" placeholder="e.g. 28.75" step="0.01" required>
+            <div class="calc-badge" id="litersBadge">
+              <i class="fas fa-calculator me-1"></i> <span id="litersText"></span>
+            </div>
+          </div>
+
+          <!-- Cost — auto calculated -->
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-money-bill me-1" style="color:#8B1A1A;"></i>Cost (LKR) <span class="required-star">*</span></label>
+            <input type="number" name="cost" id="costInput" class="form-control" placeholder="e.g. 9200.00" step="0.01" required>
+            <div class="calc-badge" id="costBadge">
+              <i class="fas fa-calculator me-1"></i> <span id="costText"></span>
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="col-md-6">
+            <label class="form-label"><i class="fas fa-calendar me-1" style="color:#8B1A1A;"></i>Date <span class="required-star">*</span></label>
+            <input type="date" name="log_date" class="form-control" value="<%= new Date().toISOString().split('T')[0] %>" required>
+          </div>
+
+        </div>
+
+        <div class="mt-4 pt-3" style="border-top: 2px solid #f5f0eb;">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Fuel Log</button>
+          <a href="/fuel" class="btn btn-outline-secondary ms-2"><i class="fas fa-times me-1"></i>Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="text-center mt-4" style="font-size:12px; color:#b5a69a;">
+      <i class="fas fa-shield-alt me-1"></i> SRMSS v1.0 • <i class="fas fa-heart" style="color:#8B1A1A;"></i> Made in Sri Lanka
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const busSelect = document.getElementById('busSelect');
+    const routeSelect = document.getElementById('routeSelect');
+    const litersInput = document.getElementById('litersInput');
+    const costInput = document.getElementById('costInput');
+    const autoInfo = document.getElementById('autoInfo');
+    const autoInfoText = document.getElementById('autoInfoText');
+    const distanceBadge = document.getElementById('distanceBadge');
+    const distanceText = document.getElementById('distanceText');
+    const litersBadge = document.getElementById('litersBadge');
+    const litersText = document.getElementById('litersText');
+    const costBadge = document.getElementById('costBadge');
+    const costText = document.getElementById('costText');
+
+    busSelect.addEventListener('change', function() {
+      const busId = this.value;
+      if (!busId) {
+        autoInfo.classList.remove('show');
+        return;
+      }
+
+      fetch('/fuel/bus-info/' + busId)
+        .then(res => res.json())
+        .then(data => {
+          if (data.route_id) {
+            // Auto-select route
+            routeSelect.value = data.route_id;
+
+            // Show info
+            autoInfo.classList.add('show');
+            autoInfoText.innerHTML = `✅ Last route: <strong>${data.route_name}</strong> | Fuel: <strong>${data.fuel_type}</strong> | Efficiency: <strong>${data.efficiency} km/L</strong>`;
+
+            // Distance badge
+            distanceBadge.classList.add('show');
+            distanceText.textContent = `Distance: ${data.distance_km} km`;
+
+            // Auto-fill liters
+            litersInput.value = data.liters_suggested;
+            litersBadge.classList.add('show');
+            litersText.textContent = `Auto-calculated: ${data.distance_km} km ÷ ${data.efficiency} km/L = ${data.liters_suggested} L`;
+
+            // Auto-fill cost
+            costInput.value = data.cost_suggested;
+            costBadge.classList.add('show');
+            costText.textContent = `Auto-calculated: ${data.liters_suggested} L × LKR ${data.price_per_liter} = LKR ${data.cost_suggested}`;
+
+          } else {
+            autoInfo.classList.add('show');
+            autoInfoText.innerHTML = `ℹ️ Fuel type: <strong>${data.fuel_type || 'diesel'}</strong> | No recent schedule found. Please enter manually.`;
+            distanceBadge.classList.remove('show');
+            litersBadge.classList.remove('show');
+            costBadge.classList.remove('show');
+          }
+        });
+    });
+
+    // Recalculate cost when liters change manually
+    litersInput.addEventListener('input', function() {
+      const pricePerLiter = 320; // default diesel
+      const cost = (parseFloat(this.value) * pricePerLiter).toFixed(2);
+      if (!isNaN(cost)) costInput.value = cost;
+    });
+  </script>
+</body>
+</html>
